@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKRT Transport | Route Poster</title>
+    <meta name="description" content="A road-first transport landing page with a cinematic poster layout, curved route spine, and compact logistics story blocks.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Barlow+Condensed:wght@500;700;800&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="stage">
+        <div class="stage-star" aria-hidden="true"></div>
+
+        <div class="poster-shell">
+            <div class="poster">
+                <div class="poster-noise" aria-hidden="true"></div>
+                <div class="poster-orbit orbit-left" aria-hidden="true"></div>
+                <div class="poster-orbit orbit-right" aria-hidden="true"></div>
+
+                <div class="road-layer" aria-hidden="true">
+                    <svg id="road-svg" viewBox="0 0 420 1700" preserveAspectRatio="none">
+                        <path id="road-shadow" d="M 205 1706 C 207 1630 208 1572 208 1510 C 208 1414 182 1324 188 1206 C 196 1060 248 968 240 820 C 231 674 180 558 191 412 C 202 258 235 146 223 40 C 218 -12 216 -52 214 -96" />
+                        <path id="road-path" d="M 205 1706 C 207 1630 208 1572 208 1510 C 208 1414 182 1324 188 1206 C 196 1060 248 968 240 820 C 231 674 180 558 191 412 C 202 258 235 146 223 40 C 218 -12 216 -52 214 -96" />
+                        <path id="road-centerline" d="M 205 1706 C 207 1630 208 1572 208 1510 C 208 1414 182 1324 188 1206 C 196 1060 248 968 240 820 C 231 674 180 558 191 412 C 202 258 235 146 223 40 C 218 -12 216 -52 214 -96" />
+                    </svg>
+                </div>
+
+                <div class="vehicles-layer" aria-hidden="true">
+                    <div class="vehicle" id="truck-one">
+                        <div class="headlight-rig">
+                            <span class="headlight-core headlight-core-left"></span>
+                            <span class="headlight-core headlight-core-right"></span>
+                            <span class="headlight-beam headlight-beam-left"></span>
+                            <span class="headlight-beam headlight-beam-right"></span>
+                        </div>
+                        <img class="vehicle-body" src="car-main.svg" alt="">
+                    </div>
+
+                    <div class="vehicle" id="truck-two">
+                        <div class="headlight-rig">
+                            <span class="headlight-core headlight-core-left"></span>
+                            <span class="headlight-core headlight-core-right"></span>
+                            <span class="headlight-beam headlight-beam-left"></span>
+                            <span class="headlight-beam headlight-beam-right"></span>
+                        </div>
+                        <img class="vehicle-body" src="car-main.svg" alt="">
+                    </div>
+
+                    <div class="vehicle" id="truck-three">
+                        <div class="headlight-rig">
+                            <span class="headlight-core headlight-core-left"></span>
+                            <span class="headlight-core headlight-core-right"></span>
+                            <span class="headlight-beam headlight-beam-left"></span>
+                            <span class="headlight-beam headlight-beam-right"></span>
+                        </div>
+                        <img class="vehicle-body" src="car-main.svg" alt="">
+                    </div>
+                </div>
+
+                <section id="contact" class="poster-section contact-section">
+                    <span class="section-label">Contact</span>
+                    <div class="lane-grid">
+                        <article class="panel panel-form left-lane">
+                            <form id="logistics-form">
+                                <label>
+                                    <span>Name</span>
+                                    <input type="text" name="name" autocomplete="off" required>
+                                </label>
+                                <label>
+                                    <span>Email</span>
+                                    <input type="email" name="email" autocomplete="off" required>
+                                </label>
+                                <label>
+                                    <span>Contact No</span>
+                                    <input type="tel" name="phone" autocomplete="off" required>
+                                </label>
+                                <label>
+                                    <span>Message</span>
+                                    <textarea name="message" rows="4" autocomplete="off" required></textarea>
+                                </label>
+                                <button type="submit" class="pill-button">Submit</button>
+                            </form>
+                        </article>
+
+                        <aside class="right-lane contact-copy">
+                            <div class="copy-stack">
+                                <p class="eyebrow">Contact.</p>
+                                <p class="detail-text">+91 22222 44444</p>
+                                <p class="micro-text">Available 24/7 for routing, scheduling, and shipment support.</p>
+                            </div>
+                            <div class="copy-stack">
+                                <p class="eyebrow">Email.</p>
+                                <p class="detail-text">skrttransport@gmail.com</p>
+                            </div>
+                        </aside>
+                    </div>
+                </section>
+
+                <section id="services" class="poster-section services-section">
+                    <span class="section-label">Services</span>
+                    <div class="services-board">
+                        <article class="panel service-panel">
+                            <h2>Dispatch Control</h2>
+                            <p>Live route coordination for local and interstate freight.</p>
+                        </article>
+                        <article class="panel service-panel">
+                            <h2>Fleet Readiness</h2>
+                            <p>Load planning, vehicle checks, and driver scheduling.</p>
+                        </article>
+                        <article class="panel service-panel service-panel-ghost"></article>
+                        <article class="panel service-panel">
+                            <h2>Last-Mile Dropoffs</h2>
+                            <p>Timed deliveries that keep your doorstep promises intact.</p>
+                        </article>
+                        <article class="panel service-panel service-panel-ghost"></article>
+                        <article class="panel service-panel">
+                            <h2>Warehouse Transfers</h2>
+                            <p>Reliable movement between hubs, docks, and fulfillment points.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="about" class="poster-section about-section">
+                    <span class="section-label">About</span>
+                    <div class="about-decor" aria-hidden="true">
+                        <img src="ellipse-409-wide.svg" alt="" class="about-ellipse about-ellipse-left">
+                        <img src="ellipse-409-wide.svg" alt="" class="about-ellipse about-ellipse-right">
+                    </div>
+                    <div class="lane-grid about-grid">
+                        <div class="left-lane story-column">
+                            <article class="story-block">
+                                <h2>From Warehouse<br>To Doorstep.</h2>
+                                <p>Every shipment begins with a promise. At SKRT Transport, we turn complex logistics into smooth journeys with carefully planned routes, experienced drivers, and real-time coordination that keeps your deliveries moving without delays.</p>
+                            </article>
+                            <article class="story-block">
+                                <h2>Smarter Roads.<br>Faster Arrivals.</h2>
+                                <p>Using optimized delivery paths and efficient transport systems, SKRT Transport ensures your cargo reaches the right place at the right time with minimal downtime and maximum efficiency.</p>
+                            </article>
+                        </div>
+
+                        <div class="right-lane story-column">
+                            <article class="story-block">
+                                <h2>Delivering With<br>Purpose.</h2>
+                                <p>At SKRT Transport, transportation is more than simply moving goods from one place to another — it’s about supporting businesses, meeting deadlines, and building long-term relationships through dependable service. Every route we take is driven by commitment, consistency, and attention to detail.</p>
+                            </article>
+                            <article class="story-block">
+                                <h2>Smarter Roads.<br>Faster Arrivals.</h2>
+                                <p>From local distribution to interstate logistics, our trucking network is designed to handle every load with precision, professionalism, and a commitment to dependable service.</p>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="home" class="poster-section home-section">
+                    <span class="section-label">Home</span>
+                    <div class="lane-grid home-grid">
+                        <article class="panel hero-panel left-lane">
+                            <p class="hero-title">Building Trust, One Mile At A Time</p>
+                        </article>
+
+                        <div class="right-lane home-side">
+                            <article class="panel quote-panel">
+                                <p>SKRT Transport brings dependable trucking, smoother coordination, and delivery timing built around your business.</p>
+                            </article>
+                            <article class="panel empty-panel"></article>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="garage" aria-hidden="true">
+                    <div class="garage-shell">
+                        <div class="garage-column"></div>
+                        <div class="garage-lane active"></div>
+                        <div class="garage-lane"></div>
+                    </div>
+                </div>
+
+                <nav class="dock" aria-label="Section navigation">
+                    <a href="#home" class="dock-logo" aria-label="SKRT Transport home">
+                        <img src="nav-bar-logo.png" alt="SKRT Transport logo">
+                    </a>
+                    <div class="dock-track">
+                        <a href="#home" class="dock-link" data-target="home">Home</a>
+                        <a href="#about" class="dock-link" data-target="about">About</a>
+                        <a href="#services" class="dock-link" data-target="services">Services</a>
+                        <a href="#contact" class="dock-link" data-target="contact">Contact</a>
+                        <a href="#tracking" class="dock-link dock-link-muted">Tracking</a>
+                        <a href="#estimate" class="dock-link dock-link-muted">Existing User</a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
