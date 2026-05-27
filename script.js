@@ -431,9 +431,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // TRUE MOVEMENT DIRECTION
         const movingBackward =
-            currentProgress > previousProgress;
+            currentProgress < previousProgress;
         if (localProgress > 0.05 && localProgress < 0.95) {
-            truck.direction = movingBackward ? -1 : 1;
+            truck.direction = movingBackward ? 1 : -1;
         }
 
         // ONLY ACTIVE MOVING TRUCK ROTATES
