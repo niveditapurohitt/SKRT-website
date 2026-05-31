@@ -5,6 +5,8 @@
     const poster = document.querySelector(".poster");
     const form = document.getElementById("logistics-form");
     const sections = [...document.querySelectorAll(".poster-section")];
+    const dock = document.querySelector(".dock");
+    const dockMenuToggle = document.querySelector(".dock-menu-toggle");
     const navLinks = [...document.querySelectorAll(".dock-link[data-target]")];
     const vehicleImages = [...document.querySelectorAll(".vehicle-body")];
 
@@ -19,6 +21,7 @@
 
     const LANE_OFFSET = -22;
     const TURN_CENTERING = 0.55;
+    const ROAD_EDGE_MARGIN = 4;
     const QUEUE_GAP = 118;
 
     const SECTION_ANCHOR_SCREEN_FRACTION = 0.5;
@@ -109,6 +112,57 @@
         );
     }
 
+    function cssNumber(name, fallback) {
+
+        const value =
+            getComputedStyle(document.documentElement)
+                .getPropertyValue(name)
+                .trim();
+
+        const numericValue =
+            Number.parseFloat(value);
+
+        return Number.isFinite(numericValue)
+            ? numericValue
+            : fallback;
+    }
+
+    function viewBoxScaleX() {
+
+        const rect =
+            roadSvg.getBoundingClientRect();
+
+        return (rect.width || VIEWBOX_WIDTH) / VIEWBOX_WIDTH;
+    }
+
+    function safeLaneOffset(truck, desiredOffset) {
+
+        const scaleX =
+            viewBoxScaleX() || 1;
+
+        const elementWidth =
+            truck?.element?.offsetWidth ||
+            truck?.element?.getBoundingClientRect().width ||
+            86;
+
+        const roadHalfWidth =
+            cssNumber("--road-width", 88) / 2;
+
+        const vehicleHalfWidth =
+            (elementWidth / scaleX) / 2;
+
+        const maxOffset =
+            Math.max(
+                0,
+                roadHalfWidth -
+                vehicleHalfWidth -
+                ROAD_EDGE_MARGIN
+            );
+
+        return Math.sign(desiredOffset || 1) *
+            Math.min(Math.abs(desiredOffset), maxOffset);
+    }
+
     function roadAlignedRotation(progressOnPath) {
         const curveRotation =
             pathRotationAt(progressOnPath) *
@@ -184,7 +238,7 @@
         );
     }
 
-    function sectionAnchorState(sectionId, fallbackProgress) {
+    function sectionAnchorState(sectionId, fallbackProgress, truck) {
 
         const section =
             sectionId
@@ -233,7 +287,10 @@
             roadAlignedRotation(pathProgress);
 
         const laneAnchorOffset =
-            isReversing ? Math.abs(LANE_OFFSET) : LANE_OFFSET;
+            safeLaneOffset(
+                truck,
+                isReversing ? Math.abs(LANE_OFFSET) : LANE_OFFSET
+            );
 
         const offset =
             offsetPoint(
@@ -266,7 +323,8 @@
             truck.parked =
                 sectionAnchorState(
                     truck.parkedSectionId,
-                    fallbackProgresses[index]
+                    fallbackProgresses[index],
+                    truck
                 );
 
             truck.lastRotation = truck.parked.rotation;
@@ -279,7 +337,8 @@
             const stopState =
                 sectionAnchorState(
                     truck.stopSectionId,
-                    fallbackProgresses[index] + 0.12
+                    fallbackProgresses[index] + 0.12,
+                    truck
                 );
 
             truck.stop = {
@@ -350,6 +409,25 @@
             routeProgressFromScroll();
 
         needsRender = true;
+    }
+
+    function setDockMenuOpen(isOpen) {
+
+        if (!dock || !dockMenuToggle) return;
+
+        dock.classList.toggle("menu-open", isOpen);
+
+        dockMenuToggle.setAttribute(
+            "aria-expanded",
+            String(isOpen)
+        );
+
+        dockMenuToggle.setAttribute(
+            "aria-label",
+            isOpen
+                ? "Close navigation menu"
+                : "Open navigation menu"
+        );
     }
 
     function truckState(truck, progress) {
@@ -455,8 +533,11 @@
         );
 
         const centeredLaneOffset =
-            laneOffset *
-            (1 - (Math.sin(truck.turnAmount * Math.PI) * TURN_CENTERING));
+            safeLaneOffset(
+                truck,
+                laneOffset *
+                (1 - (Math.sin(truck.turnAmount * Math.PI) * TURN_CENTERING))
+            );
 
         let offset =
             offsetPoint(
@@ -579,7 +660,23 @@
                 behavior: "smooth",
                 block: "start"
             });
+
+            setDockMenuOpen(false);
         });
+    });
+
+    if (dockMenuToggle) {
+
+        dockMenuToggle.addEventListener("click", () => {
+            setDockMenuOpen(!dock?.classList.contains("menu-open"));
+        });
+    }
+
+    window.addEventListener("keydown", (event) => {
+
+        if (event.key === "Escape") {
+            setDockMenuOpen(false);
+        }
     });
 
     if (form) {

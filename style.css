@@ -15,6 +15,14 @@
     --accent-dark: #234f5f;
     --font-body: "Manrope", sans-serif;
     --font-display: "Barlow Condensed", sans-serif;
+    --section-y: clamp(72px, 10vh, 108px);
+    --section-x: clamp(68px, 7vw, 110px);
+    --section-bottom: 138px;
+    --dock-clearance: 138px;
+    --road-width: 100;
+    --road-shadow-width: 136;
+    --road-line-width: 4.5;
+    --truck-width: clamp(132px, 13vw, 192px);
 }
 
 * {
@@ -23,6 +31,7 @@
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-bottom: var(--dock-clearance);
 }
 
 body {
@@ -66,7 +75,7 @@ svg {
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    padding-bottom: 138px;
+    padding-bottom: var(--section-bottom);
     background: transparent;
 }
 
@@ -126,7 +135,7 @@ svg {
 #road-shadow {
     fill: none;
     stroke: var(--road-shadow);
-    stroke-width: 120;
+    stroke-width: var(--road-shadow-width);
     stroke-linecap: round;
     filter: blur(30px);
 }
@@ -134,7 +143,7 @@ svg {
 #road-path {
     fill: none;
     stroke: var(--road);
-    stroke-width: 88;
+    stroke-width: var(--road-width);
     stroke-linecap: round;
     stroke-linejoin: round;
 }
@@ -142,7 +151,7 @@ svg {
 #road-centerline {
     fill: none;
     stroke: var(--line);
-    stroke-width: 4.5;
+    stroke-width: var(--road-line-width);
     stroke-linecap: round;
     stroke-dasharray: 22 18;
 }
@@ -151,8 +160,9 @@ svg {
     position: absolute;
     top: 0;
     left: 0;
-    width: 192px;
-    height: 288px;
+    width: var(--truck-width);
+    height: auto;
+    aspect-ratio: 2 / 3;
     transform-origin: center center;
     filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.45));
     opacity: 0;
@@ -188,36 +198,35 @@ svg {
 }
 
 .truck-light-front {
-    top: 18px;
-    width: 22px;
+    width: 11.5%;
     filter: drop-shadow(0 0 8px rgba(255, 234, 169, 0.4));
 }
 
 .truck-light-front-left {
-    top: -10px;
-    left: 70px;
+    top: -3.5%;
+    left: 36%;
     transform: rotate(-6deg);
 }
 
 .truck-light-front-right {
-    top: -10px;
-    right: 70px;
+    top: -3.5%;
+    right: 36%;
     transform: scaleX(-1) rotate(-6deg);
 }
 
 .truck-light-rear {
-    bottom: 18px;
-    width: 16px;
+    bottom: 6%;
+    width: 8.5%;
     filter: drop-shadow(0 0 8px rgba(255, 80, 80, 0.45));
 }
 
 .truck-light-rear-left {
-    left: 60px;
+    left: 31%;
     transform: none;
 }
 
 .truck-light-rear-right {
-    right: 60px;
+    right: 31%;
     transform: scaleX(-1);
 }
 
@@ -268,7 +277,7 @@ model-viewer::part(default-progress-bar) {
     flex-direction: column;
     justify-content: center;
     gap: clamp(26px, 4vh, 44px);
-    padding: clamp(72px, 10vh, 108px) clamp(68px, 7vw, 110px) 118px clamp(76px, 8vw, 128px);
+    padding: var(--section-y) var(--section-x) var(--section-bottom);
     scroll-snap-align: start;
     scroll-snap-stop: always;
 }
@@ -310,7 +319,7 @@ model-viewer::part(default-progress-bar) {
 
 .lane-grid {
     display: grid;
-    grid-template-columns: minmax(320px, 1fr) 240px minmax(320px, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(160px, 240px) minmax(0, 1fr);
     column-gap: clamp(28px, 4vw, 58px);
     align-items: center;
 }
@@ -324,7 +333,7 @@ model-viewer::part(default-progress-bar) {
 }
 
 .panel {
-    border-radius: 28px;
+    border-radius: clamp(18px, 2vw, 28px);
     background: linear-gradient(180deg, rgba(99, 92, 138, 0.48), rgba(74, 67, 103, 0.56));
     border: 1px solid var(--panel-border);
     box-shadow:
@@ -335,22 +344,21 @@ model-viewer::part(default-progress-bar) {
 
 .hero-panel {
     max-width: 420px;
-    min-height: 520px;
-    padding: 24px 18px 24px 18px;
+    min-height: clamp(360px, 48vh, 520px);
+    padding: clamp(20px, 2vw, 24px) clamp(16px, 2vw, 18px);
     display: flex;
     align-items: flex-start;
-        background: linear-gradient(180deg, rgba(99, 92, 138, 0.18), rgba(74, 67, 103, 0.22));
-
+    background: linear-gradient(180deg, rgba(99, 92, 138, 0.18), rgba(74, 67, 103, 0.22));
 }
 
 .hero-title {
     margin: 0;
     max-width: 7ch;
     font-family: "Fredoka", sans-serif;
-    font-size: clamp(3.5rem, 8vw, 5rem);
+    font-size: 5rem;
     line-height: 1;
     text-transform: uppercase;
-    letter-spacing: -0.03em;
+    letter-spacing: 0;
 }
 
 .home-side {
@@ -471,6 +479,7 @@ model-viewer::part(default-progress-bar) {
 .story-block {
     max-width: 440px;
     width: 100%;
+    min-width: 0;
 }
 
 .story-block h2 {
@@ -487,8 +496,7 @@ model-viewer::part(default-progress-bar) {
     margin: 0;
     font-size: 1.05rem;
     line-height: 1.9;
-        font-family: "Fredoka", sans-serif;
-
+    font-family: "Fredoka", sans-serif;
     color: rgba(252, 252, 255, 0.9);
 }
 
@@ -612,6 +620,7 @@ model-viewer::part(default-progress-bar) {
     font-size: 1.2rem;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.96);
+    overflow-wrap: anywhere;
 }
 
 .micro-text {
@@ -658,6 +667,54 @@ model-viewer::part(default-progress-bar) {
     object-fit: cover;
 }
 
+.dock-menu-toggle {
+    position: relative;
+    z-index: 3;
+    display: none;
+    width: 48px;
+    height: 48px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 50%;
+    padding: 0;
+    place-items: center;
+    background: rgba(107, 106, 114, 0.9);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        0 10px 22px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.dock-menu-toggle span {
+    position: absolute;
+    left: 14px;
+    width: 20px;
+    height: 2px;
+    border-radius: 999px;
+    background: #ffffff;
+    transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.dock-menu-toggle span:nth-child(1) {
+    transform: translateY(-7px);
+}
+
+.dock-menu-toggle span:nth-child(3) {
+    transform: translateY(7px);
+}
+
+.dock.menu-open .dock-menu-toggle span:nth-child(1) {
+    transform: rotate(45deg);
+}
+
+.dock.menu-open .dock-menu-toggle span:nth-child(2) {
+    opacity: 0;
+}
+
+.dock.menu-open .dock-menu-toggle span:nth-child(3) {
+    transform: rotate(-45deg);
+}
+
 .dock-track {
     position: relative;
     margin-left: -14px;
@@ -700,8 +757,11 @@ model-viewer::part(default-progress-bar) {
     letter-spacing: 0.04em;
     color: #ffffff;
     text-decoration: none;
-    margin-left: 30px;
+    margin-left: 0;
     padding-inline: 10px;
+    line-height: 1.15;
+    text-align: center;
+    overflow-wrap: anywhere;
     transition: background 180ms ease, box-shadow 180ms ease, color 180ms ease;
 }
 
@@ -717,8 +777,15 @@ model-viewer::part(default-progress-bar) {
 }
 
 @media (max-width: 1100px) {
+    :root {
+        --section-x: 48px;
+        --road-width: 104;
+        --road-shadow-width: 140;
+        --truck-width: 120px;
+    }
+
     .lane-grid {
-        grid-template-columns: minmax(280px, 1fr) 170px minmax(280px, 1fr);
+        grid-template-columns: minmax(0, 1fr) minmax(150px, 170px) minmax(0, 1fr);
         column-gap: 28px;
     }
 
@@ -740,8 +807,18 @@ model-viewer::part(default-progress-bar) {
 }
 
 @media (max-width: 960px) {
+    :root {
+        --section-y: 92px;
+        --section-x: 28px;
+        --section-bottom: 128px;
+        --dock-clearance: 128px;
+        --road-width: 112;
+        --road-shadow-width: 148;
+        --truck-width: 96px;
+    }
+
     .poster-section {
-        padding: 92px 28px 160px;
+        padding: var(--section-y) var(--section-x) var(--section-bottom);
     }
 
     .section-label {
@@ -777,6 +854,10 @@ model-viewer::part(default-progress-bar) {
 
     .hero-panel {
         min-height: 360px;
+    }
+
+    .hero-title {
+        font-size: 4rem;
     }
 
     .home-side {
@@ -818,45 +899,79 @@ model-viewer::part(default-progress-bar) {
 
     .dock {
         bottom: 16px;
-        width: calc(100% - 24px);
-        flex-direction: column;
-        gap: 12px;
-        align-items: stretch;
-    }
-
-    .dock-logo {
-        width: 64px;
-        height: 64px;
-        margin: 0 auto;
+        width: auto;
+        flex-direction: row;
+        gap: 10px;
+        align-items: center;
+        justify-content: flex-end;
+        right: 16px;
+        left: auto;
         transform: none;
     }
 
+    .dock-logo {
+        width: 52px;
+        height: 52px;
+        margin: 0;
+        transform: none;
+    }
+
+    .dock-menu-toggle {
+        display: grid;
+    }
+
     .dock-track {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        position: absolute;
+        right: 0;
+        bottom: calc(100% + 12px);
+        width: min(260px, calc(100vw - 32px));
+        grid-template-columns: 1fr;
+        gap: 6px;
         margin-left: 0;
-        padding: 10px 12px;
-        border-radius: 26px;
+        min-height: 0;
+        padding: 10px;
+        border-radius: 22px;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(10px);
+        transition: opacity 180ms ease, visibility 180ms ease, transform 180ms ease;
+    }
+
+    .dock.menu-open .dock-track {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
     }
 
     .garage {
-        bottom: 132px;
+        bottom: 92px;
     }
 
     .dock-link {
-        margin-left: 0;
-        min-height: 40px;
+        min-height: 42px;
         font-size: 0.82rem;
+        padding-inline: 14px;
+        justify-content: flex-start;
     }
 }
 
 @media (max-width: 680px) {
-    .poster {
-        padding-bottom: 188px;
+    :root {
+        --section-y: 82px;
+        --section-x: 18px;
+        --section-bottom: 106px;
+        --dock-clearance: 106px;
+        --road-width: 112;
+        --road-shadow-width: 148;
+        --road-line-width: 3.8;
+        --truck-width: 72px;
     }
 
     .poster-section {
-        min-height: auto;
-        padding: 82px 18px 194px;
+        min-height: 100svh;
+        padding: var(--section-y) var(--section-x) var(--section-bottom);
         gap: 22px;
     }
 
@@ -874,7 +989,7 @@ model-viewer::part(default-progress-bar) {
     }
 
     .hero-title {
-        font-size: clamp(2.6rem, 13vw, 4rem);
+        font-size: 3rem;
     }
 
     .quote-panel {
@@ -944,57 +1059,58 @@ model-viewer::part(default-progress-bar) {
 
     .dock {
         bottom: 12px;
-        width: calc(100% - 16px);
+        right: 12px;
+        width: auto;
     }
 
     .dock-logo {
-        width: 56px;
-        height: 56px;
+        width: 46px;
+        height: 46px;
+    }
+
+    .dock-menu-toggle {
+        width: 46px;
+        height: 46px;
     }
 
     .dock-track {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-        padding: 10px;
+        width: min(248px, calc(100vw - 24px));
+        grid-template-columns: 1fr;
+        gap: 5px;
+        padding: 9px;
+        border-radius: 20px;
     }
 
     .dock-link {
-        min-height: 38px;
-        font-size: 0.72rem;
-        padding-inline: 6px;
-    }
-
-    .dock-link-muted {
-        display: none;
+        min-height: 40px;
+        font-size: 0.78rem;
+        padding-inline: 12px;
     }
 }
 
 @media (max-width: 560px) {
+    :root {
+        --section-y: 76px;
+        --section-x: 16px;
+        --section-bottom: 100px;
+        --dock-clearance: 100px;
+        --road-width: 132;
+        --road-shadow-width: 168;
+        --road-line-width: 3.5;
+        --truck-width: 64px;
+    }
+
     .orbit-left,
     .orbit-right {
         display: none;
     }
 
-    #road-shadow {
-        stroke-width: 92;
-    }
-
-    #road-path {
-        stroke-width: 66;
-    }
-
     #road-centerline {
-        stroke-width: 3.5;
         stroke-dasharray: 18 14;
     }
 
-    .vehicle {
-        width: 132px;
-        height: 198px;
-    }
-
     .poster-section {
-        padding: 76px 16px 186px;
+        padding: var(--section-y) var(--section-x) var(--section-bottom);
     }
 
     .section-label {
@@ -1002,7 +1118,7 @@ model-viewer::part(default-progress-bar) {
     }
 
     .hero-title {
-        font-size: clamp(2.2rem, 14vw, 3rem);
+        font-size: 2.5rem;
     }
 
     .quote-panel p {
@@ -1030,22 +1146,92 @@ model-viewer::part(default-progress-bar) {
 
     .dock {
         bottom: 10px;
-        width: calc(100% - 16px);
+        right: 10px;
+        width: auto;
     }
 
     .dock-logo {
-        width: 52px;
-        height: 52px;
+        width: 42px;
+        height: 42px;
+    }
+
+    .dock-menu-toggle {
+        width: 42px;
+        height: 42px;
+    }
+
+    .dock-menu-toggle span {
+        left: 12px;
+        width: 18px;
     }
 
     .dock-track {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 4px;
+        width: min(232px, calc(100vw - 20px));
+        grid-template-columns: 1fr;
         padding: 8px;
     }
 
     .dock-link {
+        min-height: 38px;
+        font-size: 0.74rem;
+    }
+}
+
+@media (max-width: 380px) {
+    :root {
+        --section-y: 68px;
+        --section-x: 12px;
+        --section-bottom: 92px;
+        --dock-clearance: 92px;
+        --road-width: 140;
+        --road-shadow-width: 174;
+        --truck-width: 56px;
+    }
+
+    .panel {
+        border-radius: 16px;
+    }
+
+    .hero-panel,
+    .quote-panel,
+    .panel-form,
+    .service-panel {
+        padding-inline: 14px;
+    }
+
+    .hero-title {
+        font-size: 2.15rem;
+    }
+
+    .dock {
+        right: 8px;
+        width: auto;
+    }
+
+    .dock-logo {
+        width: 38px;
+        height: 38px;
+    }
+
+    .dock-menu-toggle {
+        width: 38px;
+        height: 38px;
+    }
+
+    .dock-menu-toggle span {
+        left: 10px;
+        width: 18px;
+    }
+
+    .dock-track {
+        width: min(220px, calc(100vw - 16px));
+        gap: 4px;
+        padding: 7px;
+    }
+
+    .dock-link {
         min-height: 36px;
-        font-size: 0.68rem;
+        font-size: 0.7rem;
+        padding-inline: 10px;
     }
 }
