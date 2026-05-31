@@ -1,4 +1,3 @@
-<html>
 <html lang="en">
 <head> 
     <meta charset="UTF-8">
@@ -8,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Barlow+Condensed:wght@500;700;800&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -31,32 +31,28 @@
                 <div class="vehicles-layer" aria-hidden="true">
                     <div class="vehicle" id="truck-one">
                         <div class="headlight-rig">
-                            <span class="headlight-core headlight-core-left"></span>
-                            <span class="headlight-core headlight-core-right"></span>
-                            <span class="headlight-beam headlight-beam-left"></span>
-                            <span class="headlight-beam headlight-beam-right"></span>
+                            <img class="truck-light truck-light-front truck-light-front-left" src="/headlight%20(1).svg" alt="">
+                            <img class="truck-light truck-light-front truck-light-front-right" src="/headlight%20(1).svg" alt="">
                         </div>
-                        <img class="vehicle-body" src="car-main.svg" alt="">
-                    </div>
-
-                    <div class="vehicle" id="truck-two">
-                        <div class="headlight-rig">
-                            <span class="headlight-core headlight-core-left"></span>
-                            <span class="headlight-core headlight-core-right"></span>
-                            <span class="headlight-beam headlight-beam-left"></span>
-                            <span class="headlight-beam headlight-beam-right"></span>
+                        <div class="taillight-rig">
+                            <img class="truck-light truck-light-rear truck-light-rear-left" src="/rear-light.svg" alt="">
+                            <img class="truck-light truck-light-rear truck-light-rear-right" src="/rear-light.svg" alt="">
                         </div>
-                        <img class="vehicle-body" src="car-main.svg" alt="">
-                    </div>
-
-                    <div class="vehicle" id="truck-three">
-                        <div class="headlight-rig">
-                            <span class="headlight-core headlight-core-left"></span>
-                            <span class="headlight-core headlight-core-right"></span>
-                            <span class="headlight-beam headlight-beam-left"></span>
-                            <span class="headlight-beam headlight-beam-right"></span>
-                        </div>
-                        <img class="vehicle-body" src="car-main.svg" alt="">
+                        <model-viewer
+                            class="vehicle-body"
+                            src="/truck-model.glb"
+                            alt="Truck with containers"
+                            camera-orbit="90deg 45deg 170%"
+                            field-of-view="18deg"
+                            exposure="1.02"
+                            shadow-intensity="0.2"
+                            environment-image="neutral"
+                            disable-pan
+                            disable-zoom
+                            disable-tap
+                            interaction-prompt="none"
+                            loading="eager"
+                        ></model-viewer>
                     </div>
                 </div>
 
@@ -103,22 +99,22 @@
                     <span class="section-label">Services</span>
                     <div class="services-board">
                         <article class="panel service-panel">
-                            <h2>Dispatch Control</h2>
-                            <p>Live route coordination for local and interstate freight.</p>
+                            <h2></h2>
+                            <p></p>
                         </article>
                         <article class="panel service-panel">
-                            <h2>Fleet Readiness</h2>
-                            <p>Load planning, vehicle checks, and driver scheduling.</p>
-                        </article>
-                        <article class="panel service-panel service-panel-ghost"></article>
-                        <article class="panel service-panel">
-                            <h2>Last-Mile Dropoffs</h2>
-                            <p>Timed deliveries that keep your doorstep promises intact.</p>
+                            <h2></h2>
+                            <p></p>
                         </article>
                         <article class="panel service-panel service-panel-ghost"></article>
                         <article class="panel service-panel">
-                            <h2>Warehouse Transfers</h2>
-                            <p>Reliable movement between hubs, docks, and fulfillment points.</p>
+                            <h2></h2>
+                            <p></p>
+                        </article>
+                        <article class="panel service-panel service-panel-ghost"></article>
+                        <article class="panel service-panel">
+                            <h2></h2>
+                            <p></p>
                         </article>
                     </div>
                 </section>
@@ -132,23 +128,23 @@
                     <div class="lane-grid about-grid">
                         <div class="left-lane story-column">
                             <article class="story-block">
-                                <h2>From Warehouse<br>To Doorstep.</h2>
-                                <p>Every shipment begins with a promise. At SKRT Transport, we turn complex logistics into smooth journeys with carefully planned routes, experienced drivers, and real-time coordination that keeps your deliveries moving without delays.</p>
+                                <h2><br></h2>
+                                <p></p>
                             </article>
                             <article class="story-block">
-                                <h2>Smarter Roads.<br>Faster Arrivals.</h2>
-                                <p>Using optimized delivery paths and efficient transport systems, SKRT Transport ensures your cargo reaches the right place at the right time with minimal downtime and maximum efficiency.</p>
+                                <h2><br></h2>
+                                <p></p>
                             </article>
                         </div>
 
                         <div class="right-lane story-column">
                             <article class="story-block">
-                                <h2>Delivering With<br>Purpose.</h2>
-                                <p>At SKRT Transport, transportation is more than simply moving goods from one place to another — it’s about supporting businesses, meeting deadlines, and building long-term relationships through dependable service. Every route we take is driven by commitment, consistency, and attention to detail.</p>
+                                <h2><br></h2>
+                                <p></p>
                             </article>
                             <article class="story-block">
-                                <h2>Smarter Roads.<br>Faster Arrivals.</h2>
-                                <p>From local distribution to interstate logistics, our trucking network is designed to handle every load with precision, professionalism, and a commitment to dependable service.</p>
+                                <h2><br></h2>
+                                <p></p>
                             </article>
                         </div>
                     </div>
@@ -158,12 +154,12 @@
                     <span class="section-label">Home</span>
                     <div class="lane-grid home-grid">
                         <article class="panel hero-panel left-lane">
-                            <p class="hero-title">Building Trust, One Mile At A Time</p>
+                            <p class="hero-title"></p>
                         </article>
 
                         <div class="right-lane home-side">
                             <article class="panel quote-panel">
-                                <p>SKRT Transport brings dependable trucking, smoother coordination, and delivery timing built around your business.</p>
+                                <p></p>
                             </article>
                             <article class="panel empty-panel"></article>
                         </div>

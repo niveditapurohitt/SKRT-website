@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+﻿document.addEventListener("DOMContentLoaded", () => {
 
     const roadSvg = document.getElementById("road-svg");
     const roadPath = document.getElementById("road-path");
@@ -17,18 +17,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const VIEWBOX_WIDTH = 420;
     const VIEWBOX_HEIGHT = 1700;
 
-    const LANE_OFFSET = -8;
+    const LANE_OFFSET = -22;
+    const TURN_CENTERING = 0.55;
     const QUEUE_GAP = 118;
 
     const SECTION_ANCHOR_SCREEN_FRACTION = 0.5;
 
     const UPRIGHT_ROTATION = 0;
-    const CURVE_BLEND = 0.55;
-    const MAX_CURVE_TILT = 18;
+    const CURVE_TILT_MULTIPLIER = 1.7;
+    const MAX_CURVE_TILT = 30;
 
     const trucks = [
         {
             element: document.getElementById("truck-one"),
+            turnAmount: 0,
+            parkedSectionId: "home",
             parked: {
                 x: 208,
                 y: 1508,
@@ -36,37 +39,11 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             direction: 1,
             lastRotation: 0,
-            queueBehindIndex: 1,
             pathStart: 0.11,
-            pathEnd: 0.39,
+            pathEnd: 1,
             progressStart: 0,
-            progressEnd: 0.34,
-            headlightsOnWhenParked: true
-        },
-
-        {
-            element: document.getElementById("truck-two"),
-            direction: 1,
-            lastRotation: 0,
-            parkedSectionId: "about",
-            queueBehindIndex: 2,
-            pathStart: 0.39,
-            pathEnd: 0.61,
-            progressStart: 0.34,
-            progressEnd: 0.68,
-            headlightsOnWhenParked: true
-        },
-
-        {
-            element: document.getElementById("truck-three"),
-            direction: 1,
-            lastRotation: 0,
-            parkedSectionId: "services",
-            stopSectionId: "contact",
-            pathStart: 0.61,
-            pathEnd: 0.84,
-            progressStart: 0.68,
             progressEnd: 1,
+            stopSectionId: "contact",
             headlightsOnWhenParked: true
         }
     ];
@@ -74,6 +51,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let targetProgress = 0;
     let currentProgress = 0;
     let previousProgress = 0;
+
+    // Used so parking/stopping anchors can align to the same lane direction
+    // as the currently perceived travel direction.
+    let isReversing = false;
 
     let needsRender = true;
 
@@ -129,19 +110,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function roadAlignedRotation(progressOnPath) {
-
-        const rawRotation =
-            pathRotationAt(progressOnPath);
-
-        const softenedRotation =
-            lerpAngle(
-                UPRIGHT_ROTATION,
-                rawRotation,
-                CURVE_BLEND
-            );
+        const curveRotation =
+            pathRotationAt(progressOnPath) *
+            CURVE_TILT_MULTIPLIER;
 
         return clamp(
-            softenedRotation,
+            curveRotation,
             -MAX_CURVE_TILT,
             MAX_CURVE_TILT
         );
@@ -251,17 +225,22 @@ document.addEventListener("DOMContentLoaded", () => {
             pathPointAt(pathProgress);
 
         const tangentRotation =
-            pathRotationAt(pathProgress);
+            pathRotationAt(
+                Math.min(pathProgress + 0.015, 1)
+            );
 
         const rotation =
             roadAlignedRotation(pathProgress);
+
+        const laneAnchorOffset =
+            isReversing ? Math.abs(LANE_OFFSET) : LANE_OFFSET;
 
         const offset =
             offsetPoint(
                 point.x,
                 point.y,
                 tangentRotation,
-                LANE_OFFSET
+                laneAnchorOffset
             );
 
         return {
@@ -289,6 +268,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     truck.parkedSectionId,
                     fallbackProgresses[index]
                 );
+
+            truck.lastRotation = truck.parked.rotation;
         });
 
         trucks.forEach((truck, index) => {
@@ -384,6 +365,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 truck.pathEnd
             );
 
+        const isTruckMoving =
+            Math.abs(targetProgress - currentProgress) > 0.002;
+
         // PARKED STATE
         if (progress <= truck.progressStart) {
 
@@ -391,7 +375,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 x: truck.parked.x,
                 y: truck.parked.y,
                 rotation: truck.lastRotation,
-                headlightsOn: true
+                headlightsOn: false,
+                tailLightsOn: true
             };
         }
 
@@ -402,7 +387,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 x: truck.stop.x,
                 y: truck.stop.y,
                 rotation: truck.lastRotation,
-                headlightsOn: true
+                headlightsOn: false,
+                tailLightsOn: true
             };
         }
 
@@ -429,35 +415,55 @@ document.addEventListener("DOMContentLoaded", () => {
         let rotation =
             roadAlignedRotation(pathProgress);
 
-        // TRUE MOVEMENT DIRECTION
         const movingBackward =
             currentProgress < previousProgress;
-        if (localProgress > 0.05 && localProgress < 0.95) {
-            truck.direction = movingBackward ? 1 : -1;
+
+        const targetTurn =
+            movingBackward
+                ? 1
+                : 0;
+
+        truck.turnAmount = lerp(
+            truck.turnAmount,
+            targetTurn,
+            0.03
+        );
+
+        const targetRotation =
+            rotation +
+            (180 * truck.turnAmount);
+
+        if (truck.lastRotation === undefined) {
+            truck.lastRotation = targetRotation;
         }
 
-        // ONLY ACTIVE MOVING TRUCK ROTATES
-        if (
-            movingBackward &&
-            localProgress > 0.03 &&
-            localProgress < 0.97
-        ) {
-            rotation += 180;
-        }
+        truck.lastRotation =
+            lerpAngle(
+                truck.lastRotation,
+                targetRotation,
+                0.04
+            );
 
-        const isMoving =
-            localProgress > 0.03 &&
-            localProgress < 0.97;
+        rotation = truck.lastRotation;
 
-        if (isMoving) {
-            truck.lastRotation = rotation;
-        }
-        const offset =
+
+
+        const laneOffset = lerp(
+            LANE_OFFSET,
+            Math.abs(LANE_OFFSET),
+            truck.turnAmount
+        );
+
+        const centeredLaneOffset =
+            laneOffset *
+            (1 - (Math.sin(truck.turnAmount * Math.PI) * TURN_CENTERING));
+
+        let offset =
             offsetPoint(
                 point.x,
                 point.y,
                 tangentRotation,
-                LANE_OFFSET
+                centeredLaneOffset
             );
 
         const isTruckStopped =
@@ -468,7 +474,8 @@ document.addEventListener("DOMContentLoaded", () => {
             x: offset.x,
             y: offset.y,
             rotation,
-            headlightsOn: isTruckStopped
+            headlightsOn: isTruckMoving,
+            tailLightsOn: !isTruckMoving
         };
     }
 
@@ -514,6 +521,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 state.headlightsOn
             );
 
+            truck.element.classList.toggle(
+                "tail-lights-on",
+                state.tailLightsOn
+            );
+
             truck.element.classList.add("is-rendered");
         });
     }
@@ -529,6 +541,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
 
             previousProgress = currentProgress;
+
+            isReversing = targetProgress < previousProgress;
 
             currentProgress =
                 lerp(
@@ -631,3 +645,4 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(animationLoop);
 
 });
+
