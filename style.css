@@ -1,11 +1,11 @@
 :root {
-    --bg-dark: #1d181b;
-    --bg-deep: #171316;
-    --bg-light: #c8c7e4;
-    --bg-mid: #6d6b77;
-    --road: rgba(34, 34, 34, 0.92);
-    --road-shadow: rgba(119, 119, 156, 0.26);
-    --line: rgba(245, 245, 245, 0.88);
+    --bg-dark: #0d0a09;
+    --bg-deep: #1b1512;
+    --bg-light: #c79e58;
+    --bg-mid: #6f5a45;
+    --bg-start: #050505;
+    --bg-center: #120c0a;
+    --bg-end: #ffd38a;
     --panel: rgba(93, 84, 137, 0.34);
     --panel-soft: rgba(95, 89, 133, 0.22);
     --panel-border: rgba(255, 255, 255, 0.08);
@@ -19,10 +19,7 @@
     --section-x: clamp(68px, 7vw, 110px);
     --section-bottom: 138px;
     --dock-clearance: 138px;
-    --road-width: 100;
-    --road-shadow-width: 136;
-    --road-line-width: 4.5;
-    --truck-width: clamp(132px, 13vw, 192px);
+    --horizontal-distance: 0px;
 }
 
 * {
@@ -31,18 +28,18 @@
 
 html {
     scroll-behavior: smooth;
-    scroll-padding-bottom: var(--dock-clearance);
 }
 
 body {
     margin: 0;
     min-height: 100vh;
     overflow-x: hidden;
+    overflow-y: auto;
     color: var(--text);
     font-family: "Fredoka", sans-serif;
-    scroll-snap-type: y proximity;
     -webkit-text-size-adjust: 100%;
-    background: linear-gradient(180deg, #d2d0e8 0%, #6d6c77 14%, #333137 48%, #0f0f0f 80%, #000000 100%);
+    background: linear-gradient(90deg, var(--bg-start) 0%, var(--bg-center) 44%, var(--bg-end) 100%);
+    transition: background 180ms linear;
 }
 
 button,
@@ -71,12 +68,36 @@ svg {
     min-height: 100vh;
 }
 
+.poster-shell {
+    position: relative;
+    min-height: calc(100vh + var(--horizontal-distance));
+}
+
 .poster {
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    padding-bottom: var(--section-bottom);
+    position: sticky;
+    top: 0;
+    height: 100vh;
     background: transparent;
+}
+
+.poster-scene {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    overflow: hidden;
+}
+
+.poster-track {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    width: max-content;
+    height: 100%;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
 }
 
 .poster-noise {
@@ -113,173 +134,19 @@ svg {
     top: 20vh;
 }
 
-.road-layer {
-    position: absolute;
-    inset: 0;
-    z-index: 4;
-    pointer-events: none;
-}
-
-.vehicles-layer {
-    position: absolute;
-    inset: 0;
-    z-index: 5;
-    pointer-events: none;
-}
-
-#road-svg {
-    width: 100%;
-    height: 100%;
-}
-
-#road-shadow {
-    fill: none;
-    stroke: var(--road-shadow);
-    stroke-width: var(--road-shadow-width);
-    stroke-linecap: round;
-    filter: blur(30px);
-}
-
-#road-path {
-    fill: none;
-    stroke: var(--road);
-    stroke-width: var(--road-width);
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-#road-centerline {
-    fill: none;
-    stroke: var(--line);
-    stroke-width: var(--road-line-width);
-    stroke-linecap: round;
-    stroke-dasharray: 22 18;
-}
-
-.vehicle {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: var(--truck-width);
-    height: auto;
-    aspect-ratio: 2 / 3;
-    transform-origin: center center;
-    filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.45));
-    opacity: 0;
-    will-change: transform;
-    transition: opacity 160ms ease;
-    overflow: hidden;
-}
-
-.headlight-rig {
-    position: absolute;
-    inset: 0;
-    z-index: 3;
-    pointer-events: none;
-}
-
-.taillight-rig {
-    position: absolute;
-    inset: 0;
-    z-index: 3;
-    pointer-events: none;
-}
-
-.truck-light {
-    position: absolute;
-    opacity: 0;
-    transition: opacity 220ms ease, transform 220ms ease, filter 220ms ease;
-    display: block;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    object-position: center;
-    transform-origin: center center;
-}
-
-.truck-light-front {
-    width: 11.5%;
-    filter: drop-shadow(0 0 8px rgba(255, 234, 169, 0.4));
-}
-
-.truck-light-front-left {
-    top: -3.5%;
-    left: 36%;
-    transform: rotate(-6deg);
-}
-
-.truck-light-front-right {
-    top: -3.5%;
-    right: 36%;
-    transform: scaleX(-1) rotate(-6deg);
-}
-
-.truck-light-rear {
-    bottom: 6%;
-    width: 8.5%;
-    filter: drop-shadow(0 0 8px rgba(255, 80, 80, 0.45));
-}
-
-.truck-light-rear-left {
-    left: 31%;
-    transform: none;
-}
-
-.truck-light-rear-right {
-    right: 31%;
-    transform: scaleX(-1);
-}
-
-.vehicle-body {
-    width: 100%;
-    height: 100%;
-    display: block;
-    position: relative;
-    z-index: 2;
-    background: transparent;
-    pointer-events: none;
-    transform: rotate(0deg);
-    transform-origin: center center;
-    overflow: hidden;
-}
-
-model-viewer::part(default-progress-bar) {
-    display: none;
-}
-
-.vehicle.is-rendered {
-    opacity: 1;
-}
-
-.vehicle.headlights-on .truck-light-front {
-    opacity: 1;
-    filter: drop-shadow(0 0 10px rgba(255, 234, 169, 0.75));
-}
-
-.vehicle.tail-lights-on .truck-light-rear {
-    opacity: 1;
-}
-
-.vehicle.headlights-on .vehicle-body {
-    filter: brightness(1.07) saturate(1.05) drop-shadow(0 0 10px rgba(255, 245, 188, 0.25));
-}
-
-.vehicle.tail-lights-on .vehicle-body {
-    filter: brightness(0.97) saturate(1.02) drop-shadow(0 0 10px rgba(255, 90, 90, 0.24));
-}
-
 .poster-section {
     position: relative;
     z-index: 6;
+    flex: 0 0 100vw;
+    width: 100vw;
     min-height: 100vh;
     min-height: 100svh;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: clamp(26px, 4vh, 44px);
     padding: var(--section-y) var(--section-x) var(--section-bottom);
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
 }
 
 .home-section,
@@ -295,24 +162,21 @@ model-viewer::part(default-progress-bar) {
 
 .section-label {
     position: absolute;
-    left: 22px;
-    top: 50%;
-    transform: translateY(-50%) rotate(180deg);
-    writing-mode: vertical-rl;
-    font-family: "Francois One", sans-serif;
-    font-size: 2.5rem;
+    left: clamp(82px, 9vw, 150px);
+    top: 18px;
+    transform: none;
+    writing-mode: horizontal-tb;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: clamp(3.2rem, 5.2vw, 6rem);
     font-weight: 700;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.5);
-    text-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.12),
-        0 -1px 2px rgba(0, 0, 0, 10),
-        -1px 0 2px rgba(0, 0, 0, 5);
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.48);
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.24);
 }
 
 .lane-grid,
-.services-board,
-.garage {
+.services-board {
     width: min(100%, 1280px);
     margin: 0 auto;
 }
@@ -343,8 +207,8 @@ model-viewer::part(default-progress-bar) {
 }
 
 .hero-panel {
-    max-width: 420px;
-    min-height: clamp(360px, 48vh, 520px);
+    max-width: 540px;
+    min-height: 63vh;
     padding: clamp(20px, 2vw, 24px) clamp(16px, 2vw, 18px);
     display: flex;
     align-items: flex-start;
@@ -365,11 +229,12 @@ model-viewer::part(default-progress-bar) {
     display: grid;
     gap: 36px;
     justify-items: end;
+    width: min(100%, 520px);
 }
 
 .quote-panel,
 .empty-panel {
-    width: min(100%, 380px);
+    width: 100%;
     min-width: 0;
     gap: 10px;
 }
@@ -392,48 +257,18 @@ model-viewer::part(default-progress-bar) {
     background: rgba(101, 93, 143, 0.22);
 }
 
-.garage {
-    position: absolute;
-    left: 50%;
-    bottom: 42px;
-    transform: translateX(-50%);
-    z-index: 7;
-    width: min(100%, 1280px);
-    margin: 0;
-    padding-top: 0;
+.home-grid {
+    align-items: start;
 }
 
-.garage-shell {
-    width: min(100%, 420px);
-    height: 118px;
-    margin: 0 auto;
-    transform: none;
-    border: 14px solid rgba(133, 123, 123, 0.86);
-    border-bottom-width: 8px;
-    background: rgba(28, 24, 27, 0.56);
-    display: grid;
-    grid-template-columns: 54px 1fr 1fr;
-    align-items: end;
-    padding: 12px;
-    gap: 12px;
+.home-grid .left-lane,
+.home-grid .right-lane {
+    align-self: start;
 }
 
-.garage-column {
-    height: 100%;
-    background: rgba(132, 122, 122, 0.5);
-}
-
-.garage-lane {
-    height: 82px;
-    border-radius: 8px;
-    background: rgba(186, 186, 198, 0.1);
-    border: 10px solid rgba(116, 111, 117, 0.56);
-}
-
-.garage-lane.active {
-    box-shadow:
-        inset 0 0 0 3px rgba(84, 141, 255, 0.9),
-        0 0 18px rgba(84, 141, 255, 0.12);
+.home-grid .hero-panel,
+.home-grid .home-side {
+    margin-top: 18vh;
 }
 
 .about-grid {
@@ -504,14 +339,14 @@ model-viewer::part(default-progress-bar) {
 .services-board {
     display: grid;
     grid-template-columns: repeat(3, minmax(220px, 1fr));
+    margin-top: 16vh;
     gap: 56px 68px;
 }
 
 .service-panel {
     font-family: "Fredoka", sans-serif;
-
-    min-height: 265px;
-    padding: 26px 24px;
+    min-height: 210px;
+    padding: 20px 18px;
     background: linear-gradient(180deg, rgba(96, 89, 141, 0.12), rgba(74, 67, 110, 0.14));
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
@@ -598,8 +433,8 @@ model-viewer::part(default-progress-bar) {
     display: grid;
     gap: 44px;
     align-content: start;
-    justify-self: end;
-    transform: translate(40px, -26px);
+    justify-self: start;
+    transform: translate(26px, -26px);
 }
 
 .copy-stack {
@@ -631,31 +466,38 @@ model-viewer::part(default-progress-bar) {
 }
 
 .dock {
+    border-radius: 50px;
     position: fixed;
-    left: 50%;
-    bottom: 18px;
-    transform: translateX(-50%);
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    transform: none;
     z-index: 8;
-    width: min(calc(100% - 28px), 1320px);
+    width: 64px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     pointer-events: none;
-    padding-bottom: max(0px, env(safe-area-inset-bottom));
+    padding: 8px 0;
+    background: rgba(114, 110, 110, 0.78);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 10px 24px rgba(0, 0, 0, 0.2);
 }
 
 .dock-logo {
     position: relative;
     z-index: 2;
     flex: 0 0 auto;
-    width: 82px;
+    width: 72px;
     height: 82px;
     display: grid;
     place-items: center;
     border-radius: 50%;
     overflow: hidden;
-    margin-top: 4px;
-    transform: translateX(55px);
+    margin: -19px -3px 2px -6px;
+    transform: none;
     text-decoration: none;
     pointer-events: auto;
 }
@@ -668,8 +510,6 @@ model-viewer::part(default-progress-bar) {
 }
 
 .dock-menu-toggle {
-    position: relative;
-    z-index: 3;
     display: none;
     width: 48px;
     height: 48px;
@@ -717,71 +557,80 @@ model-viewer::part(default-progress-bar) {
 
 .dock-track {
     position: relative;
-    margin-left: -14px;
+    margin-left: 0;
     flex: 1 1 auto;
-    max-width: 1180px;
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 6px;
-    min-height: 46px;
-    padding: 8px 12px 8px 44px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background:
-        linear-gradient(90deg, rgba(109, 108, 115, 0.86) 0%, rgba(122, 120, 128, 0.82) 45%, rgba(108, 107, 113, 0.86) 100%);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.14),
-        0 10px 24px rgba(0, 0, 0, 0.18);
-    backdrop-filter: blur(8px);
+    width: 100%;
+    max-width: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 0;
+    min-height: 0;
+    padding: 10px 0 12px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
     pointer-events: auto;
 }
 
 .dock-track::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02) 26%, transparent 46%);
+    display: none;
 }
 
 .dock-link {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 42px;
+    width: 40px;
+    min-height: 82px;
+    padding: 6px 0;
     border-radius: 999px;
     font-family: "Fredoka", sans-serif;
-    font-size: 1rem;
+    font-size: 0.76rem;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: #ffffff;
+    letter-spacing: 0.18em;
+    color: rgba(255, 255, 255, 0.86);
     text-decoration: none;
     margin-left: 0;
-    padding-inline: 10px;
     line-height: 1.15;
     text-align: center;
     overflow-wrap: anywhere;
     transition: background 180ms ease, box-shadow 180ms ease, color 180ms ease;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
 }
 
 .dock-link.active {
-    background: rgba(72, 112, 199, 0.4);
+    background: rgba(0, 0, 0, 0.46);
+    color: #69a8ff;
     box-shadow:
-        inset 0 0 0 1px rgba(151, 188, 255, 0.72),
-        0 0 18px rgba(90, 145, 255, 0.18);
+        inset 0 0 0 1px rgba(110, 160, 255, 0.26),
+        0 0 18px rgba(0, 0, 0, 0.16);
 }
 
 .dock-link-muted {
-    opacity: 0.9;
+    opacity: 0.86;
+}
+
+.section-label {
+    left: clamp(82px, 9vw, 150px);
+    top: 18px;
+    transform: none;
+    writing-mode: horizontal-tb;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 9.5vw;
+    line-height: 0.9;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.27);
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.24);
 }
 
 @media (max-width: 1100px) {
     :root {
         --section-x: 48px;
-        --road-width: 104;
-        --road-shadow-width: 140;
-        --truck-width: 120px;
     }
 
     .lane-grid {
@@ -790,11 +639,13 @@ model-viewer::part(default-progress-bar) {
     }
 
     .services-board {
+        margin-top: clamp(70px, 9vh, 112px);
         gap: 34px;
     }
 
     .service-panel {
-        min-height: 190px;
+        min-height: 160px;
+        padding: 18px 16px;
     }
 
     .quote-panel p {
@@ -802,7 +653,8 @@ model-viewer::part(default-progress-bar) {
     }
 
     .dock-track {
-        max-width: 1040px;
+        justify-content: space-evenly;
+        padding: 8px 0 10px;
     }
 }
 
@@ -812,9 +664,6 @@ model-viewer::part(default-progress-bar) {
         --section-x: 28px;
         --section-bottom: 128px;
         --dock-clearance: 128px;
-        --road-width: 112;
-        --road-shadow-width: 148;
-        --truck-width: 96px;
     }
 
     .poster-section {
@@ -866,11 +715,13 @@ model-viewer::part(default-progress-bar) {
 
     .services-board {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-top: clamp(58px, 7vh, 96px);
         gap: 24px;
     }
 
     .service-panel {
-        min-height: 160px;
+        min-height: 140px;
+        padding: 16px 14px;
     }
 
     .service-panel-ghost {
@@ -898,62 +749,20 @@ model-viewer::part(default-progress-bar) {
     }
 
     .dock {
-        bottom: 16px;
-        width: auto;
-        flex-direction: row;
-        gap: 10px;
-        align-items: center;
-        justify-content: flex-end;
-        right: 16px;
-        left: auto;
-        transform: none;
+        left: 6px;
+        width: 60px;
     }
 
     .dock-logo {
-        width: 52px;
-        height: 52px;
-        margin: 0;
-        transform: none;
-    }
-
-    .dock-menu-toggle {
-        display: grid;
-    }
-
-    .dock-track {
-        position: absolute;
-        right: 0;
-        bottom: calc(100% + 12px);
-        width: min(260px, calc(100vw - 32px));
-        grid-template-columns: 1fr;
-        gap: 6px;
-        margin-left: 0;
-        min-height: 0;
-        padding: 10px;
-        border-radius: 22px;
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transform: translateY(10px);
-        transition: opacity 180ms ease, visibility 180ms ease, transform 180ms ease;
-    }
-
-    .dock.menu-open .dock-track {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-        transform: translateY(0);
-    }
-
-    .garage {
-        bottom: 92px;
+        width: 34px;
+        height: 34px;
     }
 
     .dock-link {
-        min-height: 42px;
-        font-size: 0.82rem;
-        padding-inline: 14px;
-        justify-content: flex-start;
+        width: 36px;
+        min-height: 76px;
+        font-size: 0.68rem;
+        letter-spacing: 0.14em;
     }
 }
 
@@ -963,10 +772,6 @@ model-viewer::part(default-progress-bar) {
         --section-x: 18px;
         --section-bottom: 106px;
         --dock-clearance: 106px;
-        --road-width: 112;
-        --road-shadow-width: 148;
-        --road-line-width: 3.8;
-        --truck-width: 72px;
     }
 
     .poster-section {
@@ -1021,11 +826,12 @@ model-viewer::part(default-progress-bar) {
 
     .services-board {
         grid-template-columns: 1fr;
+        margin-top: 46px;
     }
 
     .service-panel {
         min-height: auto;
-        padding: 22px 18px;
+        padding: 16px 14px;
     }
 
     .panel-form {
@@ -1052,39 +858,24 @@ model-viewer::part(default-progress-bar) {
 
     .about-decor,
     .orbit-left,
-    .orbit-right,
-    .garage {
+    .orbit-right {
         display: none;
     }
 
     .dock {
-        bottom: 12px;
-        right: 12px;
-        width: auto;
+        left: 4px;
+        width: 56px;
     }
 
     .dock-logo {
-        width: 46px;
-        height: 46px;
-    }
-
-    .dock-menu-toggle {
-        width: 46px;
-        height: 46px;
-    }
-
-    .dock-track {
-        width: min(248px, calc(100vw - 24px));
-        grid-template-columns: 1fr;
-        gap: 5px;
-        padding: 9px;
-        border-radius: 20px;
+        width: 30px;
+        height: 30px;
     }
 
     .dock-link {
-        min-height: 40px;
-        font-size: 0.78rem;
-        padding-inline: 12px;
+        width: 32px;
+        min-height: 68px;
+        font-size: 0.62rem;
     }
 }
 
@@ -1094,19 +885,11 @@ model-viewer::part(default-progress-bar) {
         --section-x: 16px;
         --section-bottom: 100px;
         --dock-clearance: 100px;
-        --road-width: 132;
-        --road-shadow-width: 168;
-        --road-line-width: 3.5;
-        --truck-width: 64px;
     }
 
     .orbit-left,
     .orbit-right {
         display: none;
-    }
-
-    #road-centerline {
-        stroke-dasharray: 18 14;
     }
 
     .poster-section {
@@ -1145,35 +928,19 @@ model-viewer::part(default-progress-bar) {
     }
 
     .dock {
-        bottom: 10px;
-        right: 10px;
-        width: auto;
+        left: 3px;
+        width: 52px;
     }
 
     .dock-logo {
-        width: 42px;
-        height: 42px;
-    }
-
-    .dock-menu-toggle {
-        width: 42px;
-        height: 42px;
-    }
-
-    .dock-menu-toggle span {
-        left: 12px;
-        width: 18px;
-    }
-
-    .dock-track {
-        width: min(232px, calc(100vw - 20px));
-        grid-template-columns: 1fr;
-        padding: 8px;
+        width: 28px;
+        height: 28px;
     }
 
     .dock-link {
-        min-height: 38px;
-        font-size: 0.74rem;
+        width: 30px;
+        min-height: 62px;
+        font-size: 0.58rem;
     }
 }
 
@@ -1183,9 +950,6 @@ model-viewer::part(default-progress-bar) {
         --section-x: 12px;
         --section-bottom: 92px;
         --dock-clearance: 92px;
-        --road-width: 140;
-        --road-shadow-width: 174;
-        --truck-width: 56px;
     }
 
     .panel {
@@ -1204,34 +968,18 @@ model-viewer::part(default-progress-bar) {
     }
 
     .dock {
-        right: 8px;
-        width: auto;
+        left: 2px;
+        width: 48px;
     }
 
     .dock-logo {
-        width: 38px;
-        height: 38px;
-    }
-
-    .dock-menu-toggle {
-        width: 38px;
-        height: 38px;
-    }
-
-    .dock-menu-toggle span {
-        left: 10px;
-        width: 18px;
-    }
-
-    .dock-track {
-        width: min(220px, calc(100vw - 16px));
-        gap: 4px;
-        padding: 7px;
+        width: 26px;
+        height: 26px;
     }
 
     .dock-link {
-        min-height: 36px;
-        font-size: 0.7rem;
-        padding-inline: 10px;
+        width: 28px;
+        min-height: 56px;
+        font-size: 0.54rem;
     }
 }

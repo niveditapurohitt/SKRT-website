@@ -2,12 +2,11 @@
 <head> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKRT Transport | Route Poster</title>
-    <meta name="description" content="A road-first transport landing page with a cinematic poster layout, curved route spine, and compact logistics story blocks.">
+    <title>SKRT Transport | Horizontal Journey</title>
+    <meta name="description" content="A horizontal transport landing page with a cinematic layout, warm gradient backdrop, and scroll-driven section movement.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Barlow+Condensed:wght@500;700;800&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,163 +19,123 @@
                 <div class="poster-orbit orbit-left" aria-hidden="true"></div>
                 <div class="poster-orbit orbit-right" aria-hidden="true"></div>
 
-                <div class="road-layer" aria-hidden="true">
-                    <svg id="road-svg" viewBox="0 0 420 1700" preserveAspectRatio="none">
-                        <path id="road-shadow" d="M 205 1706 C 207 1630 208 1572 208 1510 C 208 1414 182 1324 188 1206 C 196 1060 248 968 240 820 C 231 674 180 558 191 412 C 202 258 235 146 223 40 C 218 -12 216 -52 214 -96" />
-                        <path id="road-path" d="M 205 1706 C 207 1630 208 1572 208 1510 C 208 1414 182 1324 188 1206 C 196 1060 248 968 240 820 C 231 674 180 558 191 412 C 202 258 235 146 223 40 C 218 -12 216 -52 214 -96" />
-                        <path id="road-centerline" d="M 205 1706 C 207 1630 208 1572 208 1510 C 208 1414 182 1324 188 1206 C 196 1060 248 968 240 820 C 231 674 180 558 191 412 C 202 258 235 146 223 40 C 218 -12 216 -52 214 -96" />
-                    </svg>
-                </div>
+                <div class="poster-scene">
+                    <div class="poster-track">
+                        <section id="home" class="poster-section home-section">
+                            <span class="section-label">HOME</span>
+                            <div class="lane-grid home-grid">
+                                <article class="panel hero-panel left-lane">
+                                    <p class="hero-title"></p>
+                                </article>
 
-                <div class="vehicles-layer" aria-hidden="true">
-                    <div class="vehicle" id="truck-one">
-                        <div class="headlight-rig">
-                            <img class="truck-light truck-light-front truck-light-front-left" src="/headlight%20(1).svg" alt="">
-                            <img class="truck-light truck-light-front truck-light-front-right" src="/headlight%20(1).svg" alt="">
-                        </div>
-                        <div class="taillight-rig">
-                            <img class="truck-light truck-light-rear truck-light-rear-left" src="/rear-light.svg" alt="">
-                            <img class="truck-light truck-light-rear truck-light-rear-right" src="/rear-light.svg" alt="">
-                        </div>
-                        <model-viewer
-                            class="vehicle-body"
-                            src="/truck-model.glb"
-                            alt="Truck with containers"
-                            camera-orbit="90deg 45deg 170%"
-                            field-of-view="18deg"
-                            exposure="1.02"
-                            shadow-intensity="0.2"
-                            environment-image="neutral"
-                            disable-pan
-                            disable-zoom
-                            disable-tap
-                            interaction-prompt="none"
-                            loading="eager"
-                        ></model-viewer>
-                    </div>
-                </div>
-
-                <section id="contact" class="poster-section contact-section">
-                    <span class="section-label">Contact</span>
-                    <div class="lane-grid">
-                        <article class="panel panel-form left-lane">
-                            <form id="logistics-form">
-                                <label>
-                                    <span>Name</span>
-                                    <input type="text" name="name" autocomplete="off" required>
-                                </label>
-                                <label>
-                                    <span>Email</span>
-                                    <input type="email" name="email" autocomplete="off" required>
-                                </label>
-                                <label>
-                                    <span>Contact No</span>
-                                    <input type="tel" name="phone" autocomplete="off" required>
-                                </label>
-                                <label>
-                                    <span>Message</span>
-                                    <textarea name="message" rows="4" autocomplete="off" required></textarea>
-                                </label>
-                                <button type="submit" class="pill-button">Submit</button>
-                            </form>
-                        </article>
-
-                        <aside class="right-lane contact-copy">
-                            <div class="copy-stack">
-                                <p class="eyebrow">Contact.</p>
-                                <p class="detail-text">+91 22222 44444</p>
-                                <p class="micro-text">Available 24/7 for routing, scheduling, and shipment support.</p>
+                                <div class="right-lane home-side">
+                                    <article class="panel quote-panel">
+                                        <p></p>
+                                    </article>
+                                    <article class="panel empty-panel"></article>
+                                </div>
                             </div>
-                            <div class="copy-stack">
-                                <p class="eyebrow">Email.</p>
-                                <p class="detail-text">skrttransport@gmail.com</p>
+                        </section>
+
+                        <section id="about" class="poster-section about-section">
+                            <span class="section-label">ABOUT</span>
+                            <div class="about-decor" aria-hidden="true">
+                                <img src="ellipse-409-wide.svg" alt="" class="about-ellipse about-ellipse-left">
+                                <img src="ellipse-409-wide.svg" alt="" class="about-ellipse about-ellipse-right">
                             </div>
-                        </aside>
-                    </div>
-                </section>
+                            <div class="lane-grid about-grid">
+                                <div class="left-lane story-column">
+                                    <article class="story-block">
+                                        <h2><br></h2>
+                                        <p></p>
+                                    </article>
+                                    <article class="story-block">
+                                        <h2><br></h2>
+                                        <p></p>
+                                    </article>
+                                </div>
 
-                <section id="services" class="poster-section services-section">
-                    <span class="section-label">Services</span>
-                    <div class="services-board">
-                        <article class="panel service-panel">
-                            <h2></h2>
-                            <p></p>
-                        </article>
-                        <article class="panel service-panel">
-                            <h2></h2>
-                            <p></p>
-                        </article>
-                        <article class="panel service-panel service-panel-ghost"></article>
-                        <article class="panel service-panel">
-                            <h2></h2>
-                            <p></p>
-                        </article>
-                        <article class="panel service-panel service-panel-ghost"></article>
-                        <article class="panel service-panel">
-                            <h2></h2>
-                            <p></p>
-                        </article>
-                    </div>
-                </section>
+                                <div class="right-lane story-column">
+                                    <article class="story-block">
+                                        <h2><br></h2>
+                                        <p></p>
+                                    </article>
+                                    <article class="story-block">
+                                        <h2><br></h2>
+                                        <p></p>
+                                    </article>
+                                </div>
+                            </div>
+                        </section>
 
-                <section id="about" class="poster-section about-section">
-                    <span class="section-label">About</span>
-                    <div class="about-decor" aria-hidden="true">
-                        <img src="ellipse-409-wide.svg" alt="" class="about-ellipse about-ellipse-left">
-                        <img src="ellipse-409-wide.svg" alt="" class="about-ellipse about-ellipse-right">
-                    </div>
-                    <div class="lane-grid about-grid">
-                        <div class="left-lane story-column">
-                            <article class="story-block">
-                                <h2><br></h2>
-                                <p></p>
-                            </article>
-                            <article class="story-block">
-                                <h2><br></h2>
-                                <p></p>
-                            </article>
-                        </div>
+                        <section id="services" class="poster-section services-section">
+                            <span class="section-label">SERVICES</span>
+                            <div class="services-board">
+                                <article class="panel service-panel">
+                                    <h2></h2>
+                                    <p></p>
+                                </article>
+                                <article class="panel service-panel">
+                                    <h2></h2>
+                                    <p></p>
+                                </article>
+                                <article class="panel service-panel service-panel-ghost"></article>
+                                <article class="panel service-panel">
+                                    <h2></h2>
+                                    <p></p>
+                                </article>
+                                <article class="panel service-panel service-panel-ghost"></article>
+                                <article class="panel service-panel">
+                                    <h2></h2>
+                                    <p></p>
+                                </article>
+                            </div>
+                        </section>
 
-                        <div class="right-lane story-column">
-                            <article class="story-block">
-                                <h2><br></h2>
-                                <p></p>
-                            </article>
-                            <article class="story-block">
-                                <h2><br></h2>
-                                <p></p>
-                            </article>
-                        </div>
-                    </div>
-                </section>
+                        <section id="contact" class="poster-section contact-section">
+                            <span class="section-label">CONTACTS</span>
+                            <div class="lane-grid">
+                                <aside class="left-lane contact-copy">
+                                    <div class="copy-stack">
+                                        <p class="eyebrow">Contact.</p>
+                                        <p class="detail-text">+91 22222 44444</p>
+                                        <p class="micro-text">Available 24/7 for routing, scheduling, and shipment support.</p>
+                                    </div>
+                                    <div class="copy-stack">
+                                        <p class="eyebrow">Email.</p>
+                                        <p class="detail-text">skrttransport@gmail.com</p>
+                                    </div>
+                                </aside>
 
-                <section id="home" class="poster-section home-section">
-                    <span class="section-label">Home</span>
-                    <div class="lane-grid home-grid">
-                        <article class="panel hero-panel left-lane">
-                            <p class="hero-title"></p>
-                        </article>
-
-                        <div class="right-lane home-side">
-                            <article class="panel quote-panel">
-                                <p></p>
-                            </article>
-                            <article class="panel empty-panel"></article>
-                        </div>
-                    </div>
-                </section>
-
-                <div class="garage" aria-hidden="true">
-                    <div class="garage-shell">
-                        <div class="garage-column"></div>
-                        <div class="garage-lane active"></div>
-                        <div class="garage-lane"></div>
+                                <article class="panel panel-form right-lane">
+                                    <form id="logistics-form">
+                                        <label>
+                                            <span>Name</span>
+                                            <input type="text" name="name" autocomplete="off" required>
+                                        </label>
+                                        <label>
+                                            <span>Email</span>
+                                            <input type="email" name="email" autocomplete="off" required>
+                                        </label>
+                                        <label>
+                                            <span>Contact No</span>
+                                            <input type="tel" name="phone" autocomplete="off" required>
+                                        </label>
+                                        <label>
+                                            <span>Message</span>
+                                            <textarea name="message" rows="4" autocomplete="off" required></textarea>
+                                        </label>
+                                        <button type="submit" class="pill-button">Submit</button>
+                                    </form>
+                                </article>
+                            </div>
+                        </section>
                     </div>
                 </div>
 
                 <nav class="dock" aria-label="Section navigation">
                     <a href="#home" class="dock-logo" aria-label="SKRT Transport home">
-                        <img src="nav-bar-logo.png" alt="SKRT Transport logo">
+                        <img src="public/logo-Main.png" alt="SKRT Transport logo">
                     </a>
                     <button class="dock-menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="dock-menu">
                         <span></span>
@@ -184,12 +143,12 @@
                         <span></span>
                     </button>
                     <div class="dock-track" id="dock-menu">
-                        <a href="#home" class="dock-link" data-target="home">Home</a>
-                        <a href="#about" class="dock-link" data-target="about">About</a>
-                        <a href="#services" class="dock-link" data-target="services">Services</a>
-                        <a href="#contact" class="dock-link" data-target="contact">Contact</a>
-                        <a href="#tracking" class="dock-link dock-link-muted">Tracking</a>
-                        <a href="#estimate" class="dock-link dock-link-muted">Existing User</a>
+                        <a href="#home" class="dock-link" data-target="home">HOME</a>
+                        <a href="#about" class="dock-link" data-target="about">ABOUT</a>
+                        <a href="#services" class="dock-link" data-target="services">SERVICES</a>
+                        <a href="#contact" class="dock-link" data-target="contact">CONTACTS</a>
+                        <a href="#tracking" class="dock-link dock-link-muted">TRACKING</a>
+                        <a href="#tracking" class="dock-link dock-link-muted">Existing-user</a>
                     </div>
                 </nav>
             </div>
