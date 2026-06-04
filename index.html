@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Barlow+Condensed:wght@500;700;800&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -133,6 +134,33 @@
                     </div>
                 </div>
 
+                <div class="home-truck-layer" aria-hidden="true">
+                    <div class="truck-light truck-light-head" aria-hidden="true">
+                        <img src="/headlight.svg" alt="">
+                    </div>
+                    <div class="truck-light truck-light-rear" aria-hidden="true">
+                        <img src="/rear-light.svg" alt="">
+                    </div>
+                    <div class="truck-wheel truck-wheel-rear"></div>
+                    <div class="truck-wheel truck-wheel-middle"></div>
+                    <div class="truck-wheel truck-wheel-front"></div>
+                    <model-viewer
+                        class="home-truck"
+                        src="/truck-model.glb"
+                        alt="Cargo truck"
+                        camera-orbit="180deg 82deg 185%"
+                        field-of-view="20deg"
+                        exposure="1.08"
+                        shadow-intensity="0"
+                        environment-image="neutral"
+                        disable-pan
+                        disable-zoom
+                        disable-tap
+                        interaction-prompt="none"
+                        loading="eager"
+                    ></model-viewer>
+                </div>
+
                 <nav class="dock" aria-label="Section navigation">
                     <a href="#home" class="dock-logo" aria-label="SKRT Transport home">
                         <img src="public/logo-Main.png" alt="SKRT Transport logo">
@@ -146,8 +174,8 @@
                         <a href="#home" class="dock-link" data-target="home">HOME</a>
                         <a href="#about" class="dock-link" data-target="about">ABOUT</a>
                         <a href="#services" class="dock-link" data-target="services">SERVICES</a>
-                        <a href="#contact" class="dock-link" data-target="contact">CONTACTS</a>
                         <a href="#tracking" class="dock-link dock-link-muted">TRACKING</a>
+                        <a href="#contact" class="dock-link" data-target="contact">CONTACTS</a>
                         <a href="#tracking" class="dock-link dock-link-muted">Existing-user</a>
                     </div>
                 </nav>

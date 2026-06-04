@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const dock = document.querySelector(".dock");
     const dockMenuToggle = document.querySelector(".dock-menu-toggle");
     const navLinks = [...document.querySelectorAll(".dock-link[data-target]")];
+    const truckLayer = document.querySelector(".home-truck-layer");
 
     if (!posterTrack || !posterShell || sections.length === 0) {
         return;
@@ -118,11 +119,23 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function updateTruckLights() {
+        if (!truckLayer) return;
+
+        const isMoving = Math.abs(targetProgress - currentProgress) > 0.0025;
+
+        truckLayer.classList.toggle("truck-moving", isMoving);
+        truckLayer.classList.toggle("truck-stopped", !isMoving);
+    }
+
     function renderScene(progress) {
         const trackX = -(1 - progress) * horizontalDistance;
+        const wheelTravel = (1 - progress) * horizontalDistance;
         posterTrack.style.transform = `translate3d(${trackX}px, 0, 0)`;
+        root.style.setProperty("--truck-wheel-spin", `${wheelTravel * 2.2}deg`);
         updateBackground(progress);
         updateActiveLink(progress);
+        updateTruckLights();
     }
 
     function animationLoop() {
