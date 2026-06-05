@@ -23,6 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentProgress = 0;
     let maxScroll = 0;
     let needsRender = true;
+    let lastScrollY = window.scrollY;
+    let scrollDirection = "forward";
 
     function clamp(value, min, max) {
         return Math.min(Math.max(value, min), max);
@@ -128,6 +130,13 @@ document.addEventListener("DOMContentLoaded", () => {
         truckLayer.classList.toggle("truck-stopped", !isMoving);
     }
 
+    function updateTruckDirection() {
+        if (!truckLayer) return;
+
+        truckLayer.classList.toggle("truck-direction-forward", scrollDirection !== "reverse");
+        truckLayer.classList.toggle("truck-direction-reverse", scrollDirection === "reverse");
+    }
+
     function renderScene(progress) {
         const trackX = -(1 - progress) * horizontalDistance;
         const wheelTravel = (1 - progress) * horizontalDistance;
@@ -135,6 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
         root.style.setProperty("--truck-wheel-spin", `${wheelTravel * 2.2}deg`);
         updateBackground(progress);
         updateActiveLink(progress);
+        updateTruckDirection();
         updateTruckLights();
     }
 
@@ -196,6 +206,16 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener(
         "scroll",
         () => {
+            const currentScrollY = window.scrollY;
+
+            if (currentScrollY > lastScrollY) {
+                scrollDirection = "forward";
+            } else if (currentScrollY < lastScrollY) {
+                scrollDirection = "reverse";
+            }
+
+            lastScrollY = currentScrollY;
+            updateTruckDirection();
             updateTargetProgress();
         },
         { passive: true }
@@ -211,6 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         updateMetrics();
         updateTargetProgress();
+        updateTruckDirection();
 
         currentProgress = targetProgress;
         renderScene(currentProgress);
@@ -218,6 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateMetrics();
     updateTargetProgress();
+    updateTruckDirection();
     currentProgress = targetProgress;
     renderScene(currentProgress);
     requestAnimationFrame(animationLoop);
