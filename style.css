@@ -153,6 +153,7 @@ svg {
 .home-section,
 .about-section,
 .services-section,
+.tracking-section,
 .contact-section {
     background: transparent;
 }
@@ -332,7 +333,7 @@ svg {
 
 .truck-light-head {
     left: 73%;
-    bottom: 24%;
+    bottom: 23%;
     width: 50vw;
     transform: translate(-18%, 0);
 }
@@ -349,7 +350,7 @@ svg {
 }
 
 .truck-scene-reverse .truck-light-rear {
-    left: 65%;
+    left: 64%;
 }
 
 .home-truck-layer.truck-moving .truck-light-head {
