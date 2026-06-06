@@ -2,10 +2,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const posterTrack = document.querySelector(".poster-track");
     const posterShell = document.querySelector(".poster-shell");
     const form = document.getElementById("logistics-form");
+    const trackingForm = document.getElementById("tracking-form");
+    const trackingMap = document.querySelector("[data-tracking-map]");
+    const trackingTitle = document.querySelector("[data-tracking-title]");
+    const trackingCopy = document.querySelector("[data-tracking-copy]");
+    const trackingBadge = document.querySelector("[data-tracking-badge]");
+    const trackingStatus = document.querySelector("[data-tracking-status]");
+    const trackingGr = document.querySelector("[data-tracking-gr]");
+    const trackingVehicle = document.querySelector("[data-tracking-vehicle]");
+    const trackingChallan = document.querySelector("[data-tracking-challan]");
     const sections = [...document.querySelectorAll(".poster-section")];
-    const dock = document.querySelector(".dock");
-    const dockMenuToggle = document.querySelector(".dock-menu-toggle");
-    const navLinks = [...document.querySelectorAll(".dock-link[data-target]")];
     const truckLayer = document.querySelector(".home-truck-layer");
 
     if (!posterTrack || !posterShell || sections.length === 0) {
@@ -48,26 +54,11 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    function mixColor(startHex, endHex, amount) {
+    function mixRgba(startHex, endHex, amount, alpha) {
         const start = hexToRgb(startHex);
         const end = hexToRgb(endHex);
 
-        return `rgb(${clampByte(lerp(start.r, end.r, amount))}, ${clampByte(lerp(start.g, end.g, amount))}, ${clampByte(lerp(start.b, end.b, amount))})`;
-    }
-
-    function sectionIndex(sectionId) {
-        return sections.findIndex((section) => section.id === sectionId);
-    }
-
-    function setDockMenuOpen(isOpen) {
-        if (!dock || !dockMenuToggle) return;
-
-        dock.classList.toggle("menu-open", isOpen);
-        dockMenuToggle.setAttribute("aria-expanded", String(isOpen));
-        dockMenuToggle.setAttribute(
-            "aria-label",
-            isOpen ? "Close navigation menu" : "Open navigation menu"
-        );
+        return `rgba(${clampByte(lerp(start.r, end.r, amount))}, ${clampByte(lerp(start.g, end.g, amount))}, ${clampByte(lerp(start.b, end.b, amount))}, ${alpha.toFixed(3)})`;
     }
 
     function updateMetrics() {
@@ -97,28 +88,68 @@ document.addEventListener("DOMContentLoaded", () => {
         needsRender = true;
     }
 
+    function setTrackingStatus(message, isError = false) {
+        if (!trackingStatus) return;
+
+        trackingStatus.textContent = message;
+        trackingStatus.classList.toggle("is-error", isError);
+    }
+
+    function getTrackingValue(formData, fieldName) {
+        return String(formData.get(fieldName) || "").trim();
+    }
+
+    function updateTrackingCard(values) {
+        if (!trackingMap || !trackingTitle || !trackingCopy || !trackingBadge) return;
+
+        const { grNumber, vehicleNumber, challanNumber } = values;
+        const summaryParts = [];
+
+        if (trackingGr) {
+            trackingGr.textContent = grNumber || "--";
+        }
+
+        if (trackingVehicle) {
+            trackingVehicle.textContent = vehicleNumber || "--";
+        }
+
+        if (trackingChallan) {
+            trackingChallan.textContent = challanNumber || "--";
+        }
+
+        if (grNumber) {
+            summaryParts.push(`GR ${grNumber}`);
+        }
+
+        if (vehicleNumber) {
+            summaryParts.push(`Vehicle ${vehicleNumber}`);
+        }
+
+        if (challanNumber) {
+            summaryParts.push(`Challan ${challanNumber}`);
+        }
+
+        const primaryLabel = grNumber || vehicleNumber || challanNumber;
+
+        trackingMap.classList.remove("tracking-map-empty");
+        trackingMap.classList.add("tracking-map-ready");
+        trackingBadge.textContent = "Live";
+        trackingTitle.textContent = primaryLabel
+            ? `${summaryParts[0]} tracking map`
+            : "Tracking map ready";
+        trackingCopy.textContent = summaryParts.length
+            ? `Search accepted for ${summaryParts.join(" · ")}. The route card is now active.`
+            : "Enter any one identifier on the right to load the route map, shipment status, and stop details here.";
+    }
+
     function updateBackground(progress) {
         const sunrise = clamp(1 - progress, 0, 1);
         const glow = Math.pow(sunrise, 1.15);
 
-        root.style.setProperty("--bg-start", mixColor("#050505", "#2a120c", glow * 0.72));
-        root.style.setProperty("--bg-center", mixColor("#120c0a", "#a35f2a", glow * 0.88));
-        root.style.setProperty("--bg-end", mixColor("#2d1f16", "#ffd38a", glow));
-    }
-
-    function updateActiveLink(progress) {
-        if (!navLinks.length) return;
-
-        const activeIndex = clamp(
-            Math.round((1 - progress) * (sections.length - 1)),
-            0,
-            sections.length - 1
-        );
-
-        navLinks.forEach((link) => {
-            const linkIndex = sectionIndex(link.dataset.target || "");
-            link.classList.toggle("active", linkIndex === activeIndex);
-        });
+        root.style.setProperty("--bg-pan-x", `${(sunrise * 100).toFixed(2)}%`);
+        root.style.setProperty("--bg-overlay-start", mixRgba("#030712", "#23131e", glow * 0.7, 0.8 - glow * 0.2));
+        root.style.setProperty("--bg-overlay-center", mixRgba("#121221", "#894e73", glow * 0.9, 0.42 - glow * 0.12));
+        root.style.setProperty("--bg-overlay-end", mixRgba("#1d2739", "#ffe0a7", glow, 0.12 + glow * 0.18));
     }
 
     function updateTruckLights() {
@@ -143,7 +174,6 @@ document.addEventListener("DOMContentLoaded", () => {
         posterTrack.style.transform = `translate3d(${trackX}px, 0, 0)`;
         root.style.setProperty("--truck-wheel-spin", `${wheelTravel * 2.2}deg`);
         updateBackground(progress);
-        updateActiveLink(progress);
         updateTruckDirection();
         updateTruckLights();
     }
@@ -160,46 +190,48 @@ document.addEventListener("DOMContentLoaded", () => {
         requestAnimationFrame(animationLoop);
     }
 
-    navLinks.forEach((link) => {
-        link.addEventListener("click", (event) => {
-            const targetId = link.dataset.target;
-            const targetIndex = sectionIndex(targetId || "");
-
-            if (targetIndex < 0) return;
-
-            event.preventDefault();
-
-            const fraction =
-                sections.length <= 1
-                    ? 0
-                    : targetIndex / (sections.length - 1);
-
-            const targetScroll = Math.round(maxScroll * fraction);
-
-            window.scrollTo({
-                top: targetScroll,
-                behavior: "smooth"
-            });
-
-            setDockMenuOpen(false);
-        });
-    });
-
-    if (dockMenuToggle) {
-        dockMenuToggle.addEventListener("click", () => {
-            setDockMenuOpen(!dock?.classList.contains("menu-open"));
-        });
-    }
-
-    window.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
-            setDockMenuOpen(false);
-        }
-    });
-
     if (form) {
         form.addEventListener("submit", (event) => {
             event.preventDefault();
+        });
+    }
+
+    if (trackingForm) {
+        trackingForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(trackingForm);
+            const grNumber = getTrackingValue(formData, "grNumber");
+            const vehicleNumber = getTrackingValue(formData, "vehicleNumber");
+            const challanNumber = getTrackingValue(formData, "challanNumber");
+
+            if (!grNumber && !vehicleNumber && !challanNumber) {
+                setTrackingStatus("Enter at least one of GR number, vehicle number, or challan number.", true);
+
+                if (trackingMap && trackingTitle && trackingCopy && trackingBadge) {
+                    trackingMap.classList.remove("tracking-map-ready");
+                    trackingMap.classList.add("tracking-map-empty");
+                    trackingBadge.textContent = "Idle";
+                    trackingTitle.textContent = "Awaiting shipment details";
+                    trackingCopy.textContent = "Enter any one identifier on the right to load the route map, shipment status, and stop details here.";
+                }
+
+                return;
+            }
+
+            updateTrackingCard({
+                grNumber,
+                vehicleNumber,
+                challanNumber
+            });
+
+            setTrackingStatus("Tracking map loaded successfully.");
+        });
+
+        trackingForm.addEventListener("input", () => {
+            if (trackingStatus?.classList.contains("is-error")) {
+                setTrackingStatus("");
+            }
         });
     }
 

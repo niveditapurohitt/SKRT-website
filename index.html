@@ -3,11 +3,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SKRT Transport | Horizontal Journey</title>
-    <meta name="description" content="A horizontal transport landing page with a cinematic layout, warm gradient backdrop, and scroll-driven section movement.">
+    <meta name="description" content="A horizontal transport landing page with a cinematic scenic backdrop and scroll-driven section movement.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Barlow+Condensed:wght@500;700;800&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,16 +23,28 @@
                     <div class="poster-track">
                         <section id="home" class="poster-section home-section">
                             <span class="section-label">HOME</span>
+                            <div class="home-brand-stack" aria-hidden="true">
+                                <div class="home-globe-layer">
+                                    <img src="/home-globe.png" alt="" class="home-globe-image">
+                                </div>
+                                <img src="/home-logo.png" alt="" class="home-section-logo">
+                            </div>
                             <div class="lane-grid home-grid">
-                                <article class="panel hero-panel left-lane">
-                                    <p class="hero-title"></p>
-                                </article>
-
                                 <div class="right-lane home-side">
                                     <article class="panel quote-panel">
-                                        <p></p>
+                                        <div class="home-hero-copy">
+                                            <p class="home-hero-kicker">Modern Logistics</p>
+                                            <h2 class="home-hero-title">
+                                                <span class="home-hero-line home-hero-line-powering">Powering</span>
+                                                <span class="home-hero-line home-hero-line-enterprises">Enterprises.</span>
+                                            </h2>
+                                        </div>
                                     </article>
-                                    <article class="panel empty-panel"></article>
+                                    <article class="panel support-panel">
+                                        <p class="support-panel-copy">
+                                            Transform your logistics operations with real-time tracking, intelligent analytics, and automated fleet management. Built for scale.
+                                        </p>
+                                    </article>
                                 </div>
                             </div>
                         </section>
@@ -80,12 +91,6 @@
                                     <h2></h2>
                                     <p></p>
                                 </article>
-                                <article class="panel service-panel service-panel-ghost"></article>
-                                <article class="panel service-panel">
-                                    <h2></h2>
-                                    <p></p>
-                                </article>
-                                <article class="panel service-panel service-panel-ghost"></article>
                                 <article class="panel service-panel">
                                     <h2></h2>
                                     <p></p>
@@ -95,6 +100,60 @@
 
                         <section id="tracking" class="poster-section tracking-section">
                             <span class="section-label">TRACKING</span>
+                            <div class="lane-grid tracking-grid">
+                                <article class="panel panel-form tracking-form-card left-lane">
+                                    <form id="tracking-form" novalidate>
+                                        <label>
+                                            <span>GR number</span>
+                                            <input type="text" name="grNumber" autocomplete="off">
+                                        </label>
+                                        <label>
+                                            <span>Vehicle number</span>
+                                            <input type="text" name="vehicleNumber" autocomplete="off">
+                                        </label>
+                                        <label>
+                                            <span>Challan number</span>
+                                            <input type="text" name="challanNumber" autocomplete="off">
+                                        </label>
+                                        
+                                        <p class="tracking-form-status" data-tracking-status aria-live="polite"></p>
+                                        <button type="submit" class="pill-button">Track shipment</button>
+                                    </form>
+                                </article>
+
+                                <article class="panel tracking-map-card right-lane" aria-live="polite">
+                                    <div class="tracking-map-shell tracking-map-empty" data-tracking-map>
+                                        <div class="tracking-map-header">
+                                            <div>
+                                                <p class="tracking-map-kicker">Tracking map</p>
+                                                <h2 data-tracking-title>Awaiting shipment details</h2>
+                                            </div>
+                                            <div class="tracking-map-badge" data-tracking-badge>Idle</div>
+                                        </div>
+                                        <div class="tracking-map-visual" aria-hidden="true">
+                                            <span class="tracking-map-grid"></span>
+                                            <span class="tracking-map-route"></span>
+                                            <span class="tracking-stop tracking-stop-origin"></span>
+                                            <span class="tracking-stop tracking-stop-mid"></span>
+                                            <span class="tracking-stop tracking-stop-destination"></span>
+                                        </div>
+                                        <div class="tracking-map-summary">
+                                            <div class="tracking-summary-item">
+                                                <span>GR</span>
+                                                <strong data-tracking-gr>--</strong>
+                                            </div>
+                                            <div class="tracking-summary-item">
+                                                <span>Vehicle</span>
+                                                <strong data-tracking-vehicle>--</strong>
+                                            </div>
+                                            <div class="tracking-summary-item">
+                                                <span>Challan</span>
+                                                <strong data-tracking-challan>--</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
                         </section>
 
                         <section id="contact" class="poster-section contact-section">
@@ -149,21 +208,14 @@
                         <div class="truck-wheel truck-wheel-rear"></div>
                         <div class="truck-wheel truck-wheel-middle"></div>
                         <div class="truck-wheel truck-wheel-front"></div>
-                        <model-viewer
+                        <img
                             class="home-truck"
-                            src="/truck-model.glb"
+                            src="/truckk.png"
                             alt="Cargo truck"
-                            camera-orbit="180deg 82deg 185%"
-                            field-of-view="20deg"
-                            exposure="1.08"
-                            shadow-intensity="0"
-                            environment-image="neutral"
-                            disable-pan
-                            disable-zoom
-                            disable-tap
-                            interaction-prompt="none"
                             loading="eager"
-                        ></model-viewer>
+                            decoding="async"
+                            draggable="false"
+                        >
                     </div>
                     <div class="truck-scene truck-scene-reverse">
                         <div class="truck-light truck-light-head" aria-hidden="true">
@@ -175,42 +227,17 @@
                         <div class="truck-wheel truck-wheel-rear"></div>
                         <div class="truck-wheel truck-wheel-middle"></div>
                         <div class="truck-wheel truck-wheel-front"></div>
-                        <model-viewer
+                        <img
                             class="home-truck"
-                            src="/truck-model.glb"
+                            src="/truckk.png"
                             alt="Cargo truck facing the opposite direction"
-                            camera-orbit="0deg 82deg 185%"
-                            field-of-view="20deg"
-                            exposure="1.08"
-                            shadow-intensity="0"
-                            environment-image="neutral"
-                            disable-pan
-                            disable-zoom
-                            disable-tap
-                            interaction-prompt="none"
                             loading="eager"
-                        ></model-viewer>
+                            decoding="async"
+                            draggable="false"
+                        >
                     </div>
                 </div>
 
-                <nav class="dock" aria-label="Section navigation">
-                    <a href="#home" class="dock-logo" aria-label="SKRT Transport home">
-                        <img src="public/logo-Main.png" alt="SKRT Transport logo">
-                    </a>
-                    <button class="dock-menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="dock-menu">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                    <div class="dock-track" id="dock-menu">
-                        <a href="#home" class="dock-link" data-target="home">HOME</a>
-                        <a href="#about" class="dock-link" data-target="about">ABOUT</a>
-                        <a href="#services" class="dock-link" data-target="services">SERVICES</a>
-                        <a href="#tracking" class="dock-link dock-link-muted" data-target="tracking">TRACKING</a>
-                        <a href="#contact" class="dock-link" data-target="contact">CONTACT</a>
-                        
-                    </div>
-                </nav>
             </div>
         </div>
     </main>
