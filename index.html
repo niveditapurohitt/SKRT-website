@@ -83,18 +83,51 @@
                         <section id="services" class="poster-section services-section">
                             <span class="section-label">SERVICES</span>
                             <div class="services-board">
-                                <article class="panel service-panel">
-                                    <h2></h2>
-                                    <p></p>
-                                </article>
-                                <article class="panel service-panel">
-                                    <h2></h2>
-                                    <p></p>
-                                </article>
-                                <article class="panel service-panel">
-                                    <h2></h2>
-                                    <p></p>
-                                </article>
+                                <button
+                                    type="button"
+                                    class="panel service-panel service-panel-button"
+                                    data-service-card
+                                    data-service-kicker="01"
+                                    data-service-title="Road Freight"
+                                    data-service-detail="Regional and long-haul delivery with hands-on dispatch support."
+                                    data-service-points="Regional delivery|Dedicated trucks|Careful handling"
+                                    aria-haspopup="dialog"
+                                    aria-controls="service-modal"
+                                >
+                                    <span class="service-panel-index">01</span>
+                                    <h2>Road Freight</h2>
+                                    <p>Regional and long-haul delivery with hands-on dispatch support.</p>
+                                </button>
+                                <button
+                                    type="button"
+                                    class="panel service-panel service-panel-button"
+                                    data-service-card
+                                    data-service-kicker="02"
+                                    data-service-title="Fleet Tracking"
+                                    data-service-detail="Live route visibility, status updates, and proactive shipment monitoring."
+                                    data-service-points="Live progress|Shipment alerts|Route visibility"
+                                    aria-haspopup="dialog"
+                                    aria-controls="service-modal"
+                                >
+                                    <span class="service-panel-index">02</span>
+                                    <h2>Fleet Tracking</h2>
+                                    <p>Live route visibility, status updates, and proactive shipment monitoring.</p>
+                                </button>
+                                <button
+                                    type="button"
+                                    class="panel service-panel service-panel-button"
+                                    data-service-card
+                                    data-service-kicker="03"
+                                    data-service-title="Warehouse Support"
+                                    data-service-detail="Cross-docking, short-term storage, and loading support for busy freight flows."
+                                    data-service-points="Cross-docking|Short-term storage|Loading support"
+                                    aria-haspopup="dialog"
+                                    aria-controls="service-modal"
+                                >
+                                    <span class="service-panel-index">03</span>
+                                    <h2>Warehouse Support</h2>
+                                    <p>Cross-docking, short-term storage, and loading support for busy freight flows.</p>
+                                </button>
                             </div>
                         </section>
 
@@ -241,6 +274,18 @@
             </div>
         </div>
     </main>
+
+    <div class="service-modal" id="service-modal" aria-hidden="true">
+        <div class="service-modal-backdrop" data-service-close></div>
+        <section
+            class="panel service-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Service details"
+        >
+            <button type="button" class="service-modal-close" data-service-close aria-label="Close service details">×</button>
+        </section>
+    </div>
 
     <script type="module" src="script.js"></script>
 </body>

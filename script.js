@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const trackingChallan = document.querySelector("[data-tracking-challan]");
     const sections = [...document.querySelectorAll(".poster-section")];
     const truckLayer = document.querySelector(".home-truck-layer");
+    const serviceCards = [...document.querySelectorAll("[data-service-card]")];
+    const serviceModal = document.getElementById("service-modal");
+    let activeServiceCard = null;
 
     if (!posterTrack || !posterShell || sections.length === 0) {
         return;
@@ -142,6 +145,34 @@ document.addEventListener("DOMContentLoaded", () => {
             : "Enter any one identifier on the right to load the route map, shipment status, and stop details here.";
     }
 
+    function closeServiceModal() {
+        if (!serviceModal) return;
+
+        serviceModal.classList.remove("is-open");
+        serviceModal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("service-modal-open");
+
+        if (activeServiceCard instanceof HTMLElement) {
+            activeServiceCard.focus();
+        }
+    }
+
+    function openServiceModal(card) {
+        if (!serviceModal) {
+            return;
+        }
+
+        activeServiceCard = card;
+        serviceModal.classList.add("is-open");
+        serviceModal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("service-modal-open");
+
+        const closeButton = serviceModal.querySelector("[data-service-close]");
+        if (closeButton instanceof HTMLElement) {
+            closeButton.focus();
+        }
+    }
+
     function updateBackground(progress) {
         const sunrise = clamp(1 - progress, 0, 1);
         const glow = Math.pow(sunrise, 1.15);
@@ -234,6 +265,28 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    if (serviceCards.length > 0 && serviceModal) {
+        serviceCards.forEach((card) => {
+            card.addEventListener("click", () => {
+                openServiceModal(card);
+            });
+        });
+
+        serviceModal.addEventListener("click", (event) => {
+            const target = event.target;
+
+            if (target instanceof Element && target.closest("[data-service-close]")) {
+                closeServiceModal();
+            }
+        });
+    }
+
+    window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && serviceModal?.classList.contains("is-open")) {
+            closeServiceModal();
+        }
+    });
 
     window.addEventListener(
         "scroll",
