@@ -6,7 +6,7 @@
     <meta name="description" content="A horizontal transport landing page with a cinematic scenic backdrop and scroll-driven section movement.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Barlow+Condensed:wght@500;700;800&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@400;500;600;700;800&family=Barlow+Condensed:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,28 +23,25 @@
                     <div class="poster-track">
                         <section id="home" class="poster-section home-section">
                             <span class="section-label">HOME</span>
-                            <div class="home-brand-stack" aria-hidden="true">
+                            <a class="home-brand-stack" href="http://localhost:3000/login" aria-label="Open admin login">
                                 <div class="home-globe-layer">
                                     <img src="/home-globe.png" alt="" class="home-globe-image">
                                 </div>
                                 <img src="/home-logo.png" alt="" class="home-section-logo">
-                            </div>
+                            </a>
                             <div class="lane-grid home-grid">
                                 <div class="right-lane home-side">
-                                    <article class="panel quote-panel">
-                                        <div class="home-hero-copy">
-                                            <p class="home-hero-kicker">Modern Logistics</p>
-                                            <h2 class="home-hero-title">
-                                                <span class="home-hero-line home-hero-line-powering">Powering</span>
-                                                <span class="home-hero-line home-hero-line-enterprises">Enterprises.</span>
-                                            </h2>
-                                        </div>
-                                    </article>
-                                    <article class="panel support-panel">
-                                        <p class="support-panel-copy">
-                                            Transform your logistics operations with real-time tracking, intelligent analytics, and automated fleet management. Built for scale.
-                                        </p>
-                                    </article>
+                                    <div class="home-hero-copy">
+                                        <div class="home-hero-accent">NATIONWIDE FREIGHT VISIBILITY</div>
+                                        <p class="home-hero-kicker">Modern Logistics</p>
+                                        <h2 class="home-hero-title">
+                                            <span class="home-hero-line home-hero-line-powering">Powering</span>
+                                            <span class="home-hero-line home-hero-line-enterprises">Enterprises</span>
+                                        </h2>
+                                    </div>
+                                    <p class="support-panel-copy">
+                                        Transform your logistics operations with real-time tracking, intelligent analytics, and automated fleet management. Built for scale.
+                                    </p>
                                 </div>
                             </div>
                         </section>
@@ -55,27 +52,37 @@
                                 <img src="ellipse-409-wide.svg" alt="" class="about-ellipse about-ellipse-left">
                                 <img src="ellipse-409-wide.svg" alt="" class="about-ellipse about-ellipse-right">
                             </div>
-                            <div class="lane-grid about-grid">
-                                <div class="left-lane story-column">
-                                    <article class="story-block">
-                                        <h2><br></h2>
-                                        <p></p>
+                            <div class="about-carousel-shell about-carousel-shell-full">
+                                <div class="about-carousel" data-about-carousel aria-label="About SKRT carousel" tabindex="0">
+                                    <article class="about-card tone-rose" data-about-card>
+                                        <h3>50+ Years of Trust</h3>
+                                        <p>Started by our grandfather more than 50 years ago, the business grew from one vehicle into a trusted transport service.</p>
                                     </article>
-                                    <article class="story-block">
-                                        <h2><br></h2>
-                                        <p></p>
+                                    <article class="about-card tone-lilac" data-about-card>
+                                        <h3>Truck-Driven Operations</h3>
+                                        <p>Our trucks are the backbone of the service, moving goods safely with careful checks, planning, and reliable dispatch.</p>
+                                    </article>
+                                    <article class="about-card tone-cream" data-about-card>
+                                        <h3>Goods Delivery Made Simple</h3>
+                                        <p>We handle pickup, loading, route planning, and delivery so shipments reach the right place on time and in good condition.</p>
+                                    </article>
+                                    <article class="about-card tone-sky" data-about-card>
+                                        <h3>Live Tracking Updates</h3>
+                                        <p>Track your goods and vehicle status in real time, so you always know where the shipment is and what comes next.</p>
+                                    </article>
+                                    <article class="about-card tone-sand" data-about-card>
+                                        <h3>Reliable Freight Support</h3>
+                                        <p>From route coordination to customer updates, our team keeps every delivery organized, responsive, and dependable.</p>
+                                    </article>
+                                    <article class="about-card tone-lilac" data-about-card>
+                                        <h3>Online Access To Service</h3>
+                                        <p>This website makes it easier to learn about our transport work, follow shipments, and connect with the team quickly.</p>
                                     </article>
                                 </div>
 
-                                <div class="right-lane story-column">
-                                    <article class="story-block">
-                                        <h2><br></h2>
-                                        <p></p>
-                                    </article>
-                                    <article class="story-block">
-                                        <h2><br></h2>
-                                        <p></p>
-                                    </article>
+                                <div class="about-carousel-footer">
+                                    <button type="button" class="about-carousel-arrow" data-about-prev aria-label="Previous about card">←</button>
+                                    <button type="button" class="about-carousel-arrow" data-about-next aria-label="Next about card">→</button>
                                 </div>
                             </div>
                         </section>
@@ -94,9 +101,7 @@
                                     aria-haspopup="dialog"
                                     aria-controls="service-modal"
                                 >
-                                    <span class="service-panel-index">01</span>
                                     <h2>Road Freight</h2>
-                                    <p>Regional and long-haul delivery with hands-on dispatch support.</p>
                                 </button>
                                 <button
                                     type="button"
@@ -109,9 +114,7 @@
                                     aria-haspopup="dialog"
                                     aria-controls="service-modal"
                                 >
-                                    <span class="service-panel-index">02</span>
                                     <h2>Fleet Tracking</h2>
-                                    <p>Live route visibility, status updates, and proactive shipment monitoring.</p>
                                 </button>
                                 <button
                                     type="button"
@@ -124,9 +127,7 @@
                                     aria-haspopup="dialog"
                                     aria-controls="service-modal"
                                 >
-                                    <span class="service-panel-index">03</span>
                                     <h2>Warehouse Support</h2>
-                                    <p>Cross-docking, short-term storage, and loading support for busy freight flows.</p>
                                 </button>
                             </div>
                         </section>
@@ -137,20 +138,12 @@
                                 <article class="panel panel-form tracking-form-card left-lane">
                                     <form id="tracking-form" novalidate>
                                         <label>
-                                            <span>GR number</span>
-                                            <input type="text" name="grNumber" autocomplete="off">
+                                            <span>Vehicle Number</span>
+                                            <input type="text" name="vehicleNumber" autocomplete="off" placeholder="MH-03-EW-2342">
                                         </label>
-                                        <label>
-                                            <span>Vehicle number</span>
-                                            <input type="text" name="vehicleNumber" autocomplete="off">
-                                        </label>
-                                        <label>
-                                            <span>Challan number</span>
-                                            <input type="text" name="challanNumber" autocomplete="off">
-                                        </label>
-                                        
+                                        <p class="tracking-form-note">Use the vehicle number from your dispatch slip or vehicle plate record.</p>
                                         <p class="tracking-form-status" data-tracking-status aria-live="polite"></p>
-                                        <button type="submit" class="pill-button">Track shipment</button>
+                                        <button type="submit" class="pill-button">Track vehicle</button>
                                     </form>
                                 </article>
 
@@ -158,29 +151,47 @@
                                     <div class="tracking-map-shell tracking-map-empty" data-tracking-map>
                                         <div class="tracking-map-header">
                                             <div>
-                                                <p class="tracking-map-kicker">Tracking map</p>
-                                                <h2 data-tracking-title>Awaiting shipment details</h2>
+                                                <p class="tracking-map-kicker">Tracking details</p>
+                                                <h2 data-tracking-title>Awaiting vehicle details</h2>
+                                                <p class="tracking-map-copy" data-tracking-copy>Enter a vehicle number to load live shipment details.</p>
                                             </div>
                                             <div class="tracking-map-badge" data-tracking-badge>Idle</div>
                                         </div>
-                                        <div class="tracking-map-visual" aria-hidden="true">
-                                            <span class="tracking-map-grid"></span>
-                                            <span class="tracking-map-route"></span>
-                                            <span class="tracking-stop tracking-stop-origin"></span>
-                                            <span class="tracking-stop tracking-stop-mid"></span>
-                                            <span class="tracking-stop tracking-stop-destination"></span>
-                                        </div>
                                         <div class="tracking-map-summary">
                                             <div class="tracking-summary-item">
-                                                <span>GR</span>
-                                                <strong data-tracking-gr>--</strong>
+                                                <span>Shipment / LR No</span>
+                                                <strong data-tracking-consignment>--</strong>
                                             </div>
                                             <div class="tracking-summary-item">
-                                                <span>Vehicle</span>
-                                                <strong data-tracking-vehicle>--</strong>
+                                                <span>Status</span>
+                                                <strong data-tracking-status-line>--</strong>
                                             </div>
                                             <div class="tracking-summary-item">
-                                                <span>Challan</span>
+                                                <span>Driver</span>
+                                                <strong data-tracking-driver>--</strong>
+                                            </div>
+                                            <div class="tracking-summary-item">
+                                                <span>From</span>
+                                                <strong data-tracking-from>--</strong>
+                                            </div>
+                                            <div class="tracking-summary-item">
+                                                <span>To</span>
+                                                <strong data-tracking-to>--</strong>
+                                            </div>
+                                            <div class="tracking-summary-item">
+                                                <span>Route</span>
+                                                <strong data-tracking-route>--</strong>
+                                            </div>
+                                            <div class="tracking-summary-item">
+                                                <span>Current Location</span>
+                                                <strong data-tracking-current-location>--</strong>
+                                            </div>
+                                            <div class="tracking-summary-item">
+                                                <span>Cargo Type</span>
+                                                <strong data-tracking-cargo>--</strong>
+                                            </div>
+                                            <div class="tracking-summary-item">
+                                                <span>Challan No</span>
                                                 <strong data-tracking-challan>--</strong>
                                             </div>
                                         </div>
@@ -222,6 +233,7 @@
                                             <span>Message</span>
                                             <textarea name="message" rows="4" autocomplete="off" required></textarea>
                                         </label>
+                                        <p class="form-status contact-form-status" data-contact-status aria-live="polite"></p>
                                         <button type="submit" class="pill-button">Submit</button>
                                     </form>
                                 </article>
@@ -283,12 +295,19 @@
             aria-modal="true"
             aria-labelledby="service-modal-title"
             aria-describedby="service-modal-copy"
+            tabindex="-1"
         >
-            <button type="button" class="service-modal-close" data-service-close aria-label="Close service details">×</button>
-            <p class="service-modal-kicker" id="service-modal-kicker">Service 01</p>
-            <h2 id="service-modal-title">Road Freight</h2>
-            <p id="service-modal-copy">Regional and long-haul delivery with hands-on dispatch support.</p>
-            <ul class="service-modal-points" id="service-modal-points"></ul>
+            <div class="service-modal-flip">
+                <div class="service-modal-face service-modal-front">
+                    <p class="service-modal-kicker" id="service-modal-kicker">Service 01</p>
+                    <h2 class="service-modal-title" id="service-modal-title">Road Freight</h2>
+                    <p class="service-modal-copy" id="service-modal-copy">Regional and long-haul delivery with hands-on dispatch support.</p>
+                    <div class="service-modal-front-meta">
+                        <span class="service-modal-chip">Auto opens</span>
+                        <span class="service-modal-chip">Click anywhere to close</span>
+                    </div>
+                </div>
+            </div>
         </section>
     </div>
 
