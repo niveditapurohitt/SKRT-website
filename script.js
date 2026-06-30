@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const aboutTotal = document.querySelector("[data-about-total]");
     const trackingSubmitButton = trackingForm?.querySelector(".pill-button");
     const contactSubmitButton = contactForm?.querySelector(".pill-button");
+    const mobileServiceReveal = window.matchMedia("(max-width: 660px)");
     let activeServiceCard = null;
     let activeServiceCardIndex = -1;
     let serviceModalDismissedIndex = -1;
@@ -313,13 +314,13 @@ document.addEventListener("DOMContentLoaded", () => {
     function getAboutSlotConfig() {
         const width = window.innerWidth;
 
-        if (width <= 560) {
+        if (width <= 660) {
             return {
-                x: [-200, -112, 0, 112, 200, 284],
-                y: [16, 8, -16, 8, 16, 20],
-                scale: [0.74, 0.86, 1.04, 0.9, 0.78, 0.68],
+                x: [0, 0, 0, 0, 0, 0],
+                y: [-142, -72, 0, 72, 142, 214],
+                scale: [0.9, 0.96, 1.02, 0.96, 0.9, 0.84],
                 opacity: [1, 1, 1, 1, 1, 0],
-                rotate: [-7, -4, 0, 3, 6, 8]
+                rotate: [0, 0, 0, 0, 0, 0]
             };
         }
 
@@ -475,6 +476,11 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        if (mobileServiceReveal.matches) {
+            clearServiceCardFocus();
+            return;
+        }
+
         const sectionLeft = (servicesSectionIndex * window.innerWidth) - ((1 - progress) * horizontalDistance);
         const relativeTruckX = truckCenterX - sectionLeft;
 
@@ -510,6 +516,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function setupServiceCardReveal() {
         if (!servicesSection || serviceCards.length === 0) {
+            return;
+        }
+
+        if (mobileServiceReveal.matches) {
+            clearServiceCardFocus();
             return;
         }
 
@@ -653,6 +664,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (serviceCards.length > 0 && serviceModal) {
+        serviceCards.forEach((card) => {
+            card.addEventListener("click", (event) => {
+                event.stopPropagation();
+                openServiceModal(card);
+            });
+        });
+
         document.addEventListener("click", () => {
             if (serviceModal.classList.contains("is-open")) {
                 closeServiceModal();
@@ -749,4 +767,13 @@ document.addEventListener("DOMContentLoaded", () => {
     currentProgress = targetProgress;
     renderScene(currentProgress);
     scheduleAnimationLoop();
+
+    mobileServiceReveal.addEventListener?.("change", () => {
+        if (mobileServiceReveal.matches) {
+            clearServiceCardFocus();
+        } else {
+            setupServiceCardReveal();
+        }
+        renderScene(currentProgress);
+    });
 });
