@@ -2202,7 +2202,7 @@ body.service-modal-open {
     }
 }
 
-@media screen and (max-width: 660px) {
+@media screen and (min-width: 390px) and (max-width: 660px) {
     :root {
         --section-y: 82px;
         --section-x: 18px;
