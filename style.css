@@ -2796,12 +2796,13 @@ textarea {
     caret-color: #ffffff;
 }
 
-@media (min-width: 390px){
+@media (min-width: 390px) and (max-width: 400px) {
     .truck-wheel {
-        top: 40px;
+        width: clamp(32px, 6vw, 52px);
+        top: 42px;
     }
 
     .truck-scene-reverse .truck-wheel{
-        top: 40px;
+        top: 42px;
     }
 }
