@@ -420,7 +420,6 @@ document.addEventListener("DOMContentLoaded", () => {
         serviceModal.classList.remove("is-open");
         serviceModal.classList.remove("is-flipped");
         serviceModal.setAttribute("aria-hidden", "true");
-        document.body.classList.remove("service-modal-open");
 
         if (activeServiceCard instanceof HTMLElement) {
             activeServiceCard.focus();
@@ -450,7 +449,6 @@ document.addEventListener("DOMContentLoaded", () => {
         populateServiceModal(card);
         serviceModal.classList.add("is-open");
         serviceModal.setAttribute("aria-hidden", "false");
-        document.body.classList.add("service-modal-open");
 
         if (!options.auto && serviceModalCard instanceof HTMLElement) {
             serviceModalCard.focus();
@@ -499,6 +497,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        const previousIndex = activeServiceCardIndex;
         activeServiceCardIndex = nextIndex;
         serviceModalDismissedIndex = -1;
 
@@ -508,6 +507,14 @@ document.addEventListener("DOMContentLoaded", () => {
             card.classList.toggle("is-dimmed", !isActive);
             card.setAttribute("aria-expanded", isActive ? "true" : "false");
         });
+
+        if (serviceModal?.classList.contains("is-open")) {
+            if (previousIndex >= 0) {
+                closeServiceModal();
+            }
+            openServiceModal(serviceCards[activeServiceCardIndex], { auto: true });
+            return;
+        }
 
         if (activeServiceCardIndex !== serviceModalDismissedIndex) {
             openServiceModal(serviceCards[activeServiceCardIndex], { auto: true });
@@ -670,12 +677,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 openServiceModal(card);
             });
         });
-
-        document.addEventListener("click", () => {
-            if (serviceModal.classList.contains("is-open")) {
-                closeServiceModal();
-            }
-        });
     }
 
     if (aboutCards.length > 0) {
@@ -718,12 +719,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
-    window.addEventListener("keydown", (event) => {
-        if (event.key === "Escape" && serviceModal?.classList.contains("is-open")) {
-            closeServiceModal();
-        }
-    });
 
     window.addEventListener(
         "scroll",

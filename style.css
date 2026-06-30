@@ -1212,13 +1212,14 @@ body.service-modal-open {
 
 .service-modal.is-open {
     opacity: 1;
-    pointer-events: auto;
+    pointer-events: none;
 }
 
 .service-modal-backdrop {
     position: absolute;
     inset: 0;
     background: transparent;
+    pointer-events: none;
 }
 
 .service-modal-card {
