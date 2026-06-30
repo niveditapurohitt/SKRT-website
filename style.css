@@ -2356,17 +2356,17 @@ body.service-modal-open {
 
     .truck-wheel-rear {
         left: 21%;
-        top: 36px;
+        top: 32px;
     }
 
     .truck-wheel-middle {
         left: 32%;
-        top: 36px;
+        top: 32px;
     }
 
     .truck-wheel-front {
         left: 82%;
-        top: 36px;
+        top: 32px;
     }
 
     .truck-light-rear {
@@ -2383,17 +2383,17 @@ body.service-modal-open {
 
     .truck-scene-reverse .truck-wheel-rear {
         left: 78%;
-        top: 34px;
+        top: 30px;
     }
 
     .truck-scene-reverse .truck-wheel-middle {
         left: 67%;
-        top: 34px;
+        top: 30px;
     }
 
     .truck-scene-reverse .truck-wheel-front {
         left: 16%;
-        top: 34px;
+        top: 30px;
     }
 
     .about-carousel-shell-full {
@@ -2794,4 +2794,14 @@ textarea::placeholder {
 input,
 textarea {
     caret-color: #ffffff;
+}
+
+@media (min-width: 390px){
+    .truck-wheel {
+        top: 40px;
+    }
+
+    .truck-scene-reverse .truck-wheel{
+        top: 40px;
+    }
 }
