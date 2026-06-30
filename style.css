@@ -2202,7 +2202,7 @@ body.service-modal-open {
     }
 }
 
-@media (max-width: 660px) {
+@media screen and (max-width: 660px) {
     :root {
         --section-y: 82px;
         --section-x: 18px;
@@ -2660,8 +2660,8 @@ body.service-modal-open {
         grid-template-columns: 1fr;
         grid-template-rows: auto auto;
         width: 100%;
-        gap: 10px;
-        margin-top: 40px;
+        gap: 8px;
+        margin-top: 28px;
         align-items: start;
     }
 
@@ -2674,7 +2674,7 @@ body.service-modal-open {
     .contact-copy {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px 14px;
+        gap: 8px 12px;
         width: 100%;
         justify-self: stretch;
     }
@@ -2718,15 +2718,15 @@ body.service-modal-open {
     .contact-section .panel-form {
         justify-self: stretch;
         margin: 0;
-        transform: none;
-        padding: 12px 12px 10px;
+        transform: translateY(-10px);
+        padding: 10px 12px 8px;
         width: 100%;
         max-height: none;
         overflow: visible;
     }
 
     .contact-section .panel-form form {
-        gap: 8px;
+        gap: 6px;
     }
 
     .contact-section .panel-form span {
@@ -2756,7 +2756,7 @@ body.service-modal-open {
         justify-self: stretch;
         padding: 8px 14px;
         font-size: 0.8rem;
-        margin-bottom: 0;
+        margin: 4px 0 10px;
     }
 
     .about-decor,
