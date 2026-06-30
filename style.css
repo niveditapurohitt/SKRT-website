@@ -2356,44 +2356,44 @@ body.service-modal-open {
 
     .truck-wheel-rear {
         left: 21%;
-        top: 34px;
+        top: 32px;
     }
 
     .truck-wheel-middle {
         left: 32%;
-        top: 34px;
+        top: 32px;
     }
 
     .truck-wheel-front {
         left: 82%;
-        top: 34px;
+        top: 32px;
     }
 
     .truck-light-rear {
         left: 12%;
-        top: 30px;
+        top: 28px;
         width: 4.6vw;
     }
 
     .truck-scene-reverse .truck-light-rear {
         left: 86%;
-        top: 30px;
+        top: 28px;
         width: 4.6vw;
     }
 
     .truck-scene-reverse .truck-wheel-rear {
         left: 78%;
-        top: 32px;
+        top: 30px;
     }
 
     .truck-scene-reverse .truck-wheel-middle {
         left: 67%;
-        top: 32px;
+        top: 30px;
     }
 
     .truck-scene-reverse .truck-wheel-front {
         left: 16%;
-        top: 32px;
+        top: 30px;
     }
 
     .about-carousel-shell-full {
