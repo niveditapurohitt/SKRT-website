@@ -3007,6 +3007,16 @@ body.service-modal-open {
         transform: none;
     }
 
+    .contact-socials .social-links {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+        width: 100%;
+    }
+
     .contact-map-shell {
         gap: 10px;
         padding: 14px;
@@ -3024,7 +3034,7 @@ body.service-modal-open {
 
     .contact-map-frame-wrap,
     .contact-map-frame {
-        min-height: 220px;
+        min-height: 170px;
     }
 
     .contact-map-note {
@@ -3032,36 +3042,77 @@ body.service-modal-open {
         line-height: 1.35;
     }
 
-    .social-link {
-        min-height: 38px;
-        padding: 0 12px 0 10px;
+    .contact-socials .social-link {
+        min-height: 40px;
+        width: 40px;
+        padding: 0;
+        justify-content: center;
+        flex: 0 0 auto;
     }
 
-    .social-link span {
-        font-size: 0.72rem;
+    .contact-socials .social-link span {
+        display: none;
     }
 
-    .social-link svg {
+    .contact-socials .social-link svg {
         width: 16px;
         height: 16px;
     }
 
     .whatsapp-modal-card {
-        width: min(94vw, 420px);
-        padding: 22px 18px 18px;
+        width: min(90vw, 360px);
+        padding: 16px 14px 14px;
     }
 
     .whatsapp-modal-title {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
+        line-height: 1.15;
+    }
+
+    .whatsapp-modal-copy {
+        margin: 8px 0 14px;
+        font-size: 0.84rem;
+        line-height: 1.35;
+    }
+
+    .whatsapp-modal-close {
+        width: 30px;
+        height: 30px;
+        top: 10px;
+        right: 10px;
+        font-size: 1.1rem;
+    }
+
+    .whatsapp-form {
+        gap: 10px;
+    }
+
+    .whatsapp-form label {
+        gap: 6px;
+    }
+
+    .whatsapp-form span {
+        font-size: 0.82rem;
+    }
+
+    .whatsapp-form input {
+        padding: 10px 12px;
+        border-radius: 12px;
+        font-size: 0.92rem;
     }
 
     .whatsapp-modal-actions {
         flex-direction: column;
+        gap: 8px;
+        margin-top: 2px;
     }
 
     .whatsapp-modal-actions .pill-button {
         width: 100%;
         min-width: 0;
+        min-height: 40px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
     }
 
     .about-decor,
