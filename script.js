@@ -37,6 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const aboutTotal = document.querySelector("[data-about-total]");
     const trackingSubmitButton = trackingForm?.querySelector(".pill-button");
     const contactSubmitButton = contactForm?.querySelector(".pill-button");
+    const whatsappModal = document.getElementById("whatsapp-modal");
+    const whatsappForm = document.getElementById("whatsapp-form");
+    const whatsappLink = document.querySelector(".social-link-whatsapp");
+    const whatsappCloseTargets = [...document.querySelectorAll("[data-whatsapp-close]")];
     const mobileServiceReveal = window.matchMedia("(max-width: 660px)");
     let activeServiceCard = null;
     let activeServiceCardIndex = -1;
@@ -161,6 +165,41 @@ document.addEventListener("DOMContentLoaded", () => {
         button.textContent = isLoading ? loadingText : idleText;
     }
 
+    function openWhatsAppModal() {
+        if (!whatsappModal) {
+            return;
+        }
+
+        whatsappModal.classList.add("is-open");
+        whatsappModal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("whatsapp-modal-open");
+
+        const firstInput = whatsappForm?.querySelector('input[name="name"]');
+        firstInput?.focus();
+    }
+
+    function closeWhatsAppModal() {
+        if (!whatsappModal) {
+            return;
+        }
+
+        whatsappModal.classList.remove("is-open");
+        whatsappModal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("whatsapp-modal-open");
+    }
+
+    function buildWhatsAppUrl(name, email) {
+        const phone = "8619606627";
+        const message = [
+            "Hello SKRT Transport,",
+            `My name is ${name}.`,
+            `My email is ${email}.`,
+            "I would like to get in touch regarding your services."
+        ].join(" ");
+
+        return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    }
+
     if (contactForm) {
         contactForm.addEventListener("submit", async (event) => {
             event.preventDefault();
@@ -202,6 +241,43 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    whatsappLink?.addEventListener("click", (event) => {
+        event.preventDefault();
+        openWhatsAppModal();
+    });
+
+    whatsappCloseTargets.forEach((target) => {
+        target.addEventListener("click", closeWhatsAppModal);
+    });
+
+    whatsappModal?.addEventListener("click", (event) => {
+        if (event.target === whatsappModal) {
+            closeWhatsAppModal();
+        }
+    });
+
+    whatsappForm?.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(whatsappForm);
+        const name = String(formData.get("name") || "").trim();
+        const email = String(formData.get("email") || "").trim();
+
+        if (!name || !email) {
+            return;
+        }
+
+        window.open(buildWhatsAppUrl(name, email), "_blank", "noopener,noreferrer");
+        whatsappForm.reset();
+        closeWhatsAppModal();
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && whatsappModal?.classList.contains("is-open")) {
+            closeWhatsAppModal();
+        }
+    });
 
     function formatDateTime(value) {
         if (!value) {

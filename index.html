@@ -364,6 +364,36 @@
         </section>
     </div>
 
+    <div class="whatsapp-modal" id="whatsapp-modal" aria-hidden="true">
+        <div class="whatsapp-modal-backdrop" data-whatsapp-close></div>
+        <section
+            class="panel whatsapp-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="whatsapp-modal-title"
+            tabindex="-1"
+        >
+            <button type="button" class="whatsapp-modal-close" data-whatsapp-close aria-label="Close WhatsApp form">×</button>
+            <p class="eyebrow whatsapp-modal-kicker">WhatsApp</p>
+            <h2 class="whatsapp-modal-title" id="whatsapp-modal-title">Enter your details</h2>
+            <p class="whatsapp-modal-copy">We’ll open WhatsApp with your name and email included in the message.</p>
+            <form id="whatsapp-form" class="whatsapp-form">
+                <label>
+                    <span>Name</span>
+                    <input type="text" name="name" autocomplete="name" required>
+                </label>
+                <label>
+                    <span>Email</span>
+                    <input type="email" name="email" autocomplete="email" required>
+                </label>
+                <div class="whatsapp-modal-actions">
+                    <button type="button" class="pill-button whatsapp-cancel" data-whatsapp-close>Cancel</button>
+                    <button type="submit" class="pill-button whatsapp-submit">Open WhatsApp</button>
+                </div>
+            </form>
+        </section>
+    </div>
+
     <script type="module" src="script.js"></script>
 </body>
 </html>
