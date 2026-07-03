@@ -2470,8 +2470,8 @@ body.service-modal-open {
     :root {
         --section-y: 82px;
         --section-x: 18px;
-        --section-bottom: 106px;
-        --dock-clearance: 106px;
+        --section-bottom: 80px;
+        --dock-clearance: 80px;
     }
 
     .poster-section {
