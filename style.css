@@ -2925,7 +2925,7 @@ body.service-modal-open {
         grid-template-rows: auto auto;
         width: 100%;
         gap: 8px;
-        margin-top: -18px;
+        margin-top: -26px;
         align-items: start;
     }
 
@@ -2995,16 +2995,16 @@ body.service-modal-open {
 
     .contact-map-card {
         justify-self: center;
-        margin: 0;
-        transform: translateY(-22px);
-        width: min(92vw, 360px);
+        margin: 18px 0 0;
+        transform: none;
+        width: min(90vw, 340px);
     }
 
     .contact-socials {
         justify-self: stretch;
         width: 100%;
         margin: 0;
-        margin-bottom: 10px;
+        margin-bottom: 18px;
         transform: none;
     }
 
@@ -3020,7 +3020,7 @@ body.service-modal-open {
 
     .contact-map-shell {
         gap: 8px;
-        padding: 10px;
+        padding: 10px 10px 12px;
         width: 100%;
     }
 
@@ -3036,7 +3036,9 @@ body.service-modal-open {
 
     .contact-map-frame-wrap,
     .contact-map-frame {
-        min-height: 142px;
+        display: block;
+        min-height: 112px;
+        height: 112px;
         width: 100%;
     }
 
