@@ -2994,10 +2994,10 @@ body.service-modal-open {
     }
 
     .contact-map-card {
-        justify-self: stretch;
+        justify-self: center;
         margin: 0;
         transform: translateY(-22px);
-        width: 100%;
+        width: min(92vw, 360px);
     }
 
     .contact-socials {
@@ -3021,6 +3021,7 @@ body.service-modal-open {
     .contact-map-shell {
         gap: 8px;
         padding: 10px;
+        width: 100%;
     }
 
     .contact-map-header {
@@ -3036,6 +3037,7 @@ body.service-modal-open {
     .contact-map-frame-wrap,
     .contact-map-frame {
         min-height: 142px;
+        width: 100%;
     }
 
     .contact-map-note {
