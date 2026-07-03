@@ -2925,7 +2925,7 @@ body.service-modal-open {
         grid-template-rows: auto auto;
         width: 100%;
         gap: 8px;
-        margin-top: -10px;
+        margin-top: -18px;
         align-items: start;
     }
 
@@ -2996,7 +2996,7 @@ body.service-modal-open {
     .contact-map-card {
         justify-self: stretch;
         margin: 0;
-        transform: translateY(-16px);
+        transform: translateY(-22px);
         width: 100%;
     }
 
@@ -3004,7 +3004,7 @@ body.service-modal-open {
         justify-self: stretch;
         width: 100%;
         margin: 0;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
         transform: none;
     }
 
@@ -3014,13 +3014,13 @@ body.service-modal-open {
         flex-wrap: nowrap;
         align-items: center;
         justify-content: flex-start;
-        gap: 8px;
+        gap: 6px;
         width: 100%;
     }
 
     .contact-map-shell {
-        gap: 10px;
-        padding: 12px;
+        gap: 8px;
+        padding: 10px;
     }
 
     .contact-map-header {
@@ -3035,7 +3035,7 @@ body.service-modal-open {
 
     .contact-map-frame-wrap,
     .contact-map-frame {
-        min-height: 162px;
+        min-height: 142px;
     }
 
     .contact-map-note {
