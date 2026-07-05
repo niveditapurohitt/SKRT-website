@@ -3158,7 +3158,7 @@ textarea {
     caret-color: #ffffff;
 }
 
-@media (min-width: 390px) and (max-width: 400px) {
+@media (min-width: 390px) and (max-width: 480px) {
     .truck-wheel {
         width: clamp(32px, 6vw, 52px);
         top: 42px;
