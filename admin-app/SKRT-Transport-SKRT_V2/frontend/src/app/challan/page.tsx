@@ -4,13 +4,14 @@ import React, { useState, useRef, useCallback, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { Printer, Download, Save, Plus, X, Loader2, ArrowLeft, Search as SearchIcon, MessageCircle } from "lucide-react";
+import { Printer, Download, Save, Plus, X, Loader2, ArrowLeft, Search as SearchIcon, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 import { useHeader } from "@/context/HeaderContext";
 import { fetchTemplate, fillTemplate } from "@/lib/template-utils";
 import { generateAndSendPDF } from "@/lib/whatsapp";
+import { handleTableCellKeyDown } from "@/lib/tableNavigation";
 
 const today = () => {
   const d = new Date();
@@ -32,6 +33,14 @@ type ChallanRow = {
 const emptyRow = (id: number): ChallanRow => ({
   id, grNo: "", pkg: "", dest: "", content: "", consignor: "", consignee: "", total: "", wt: ""
 });
+
+const statusColors: Record<string, string> = {
+  "In Transit": "bg-primary/20 text-primary border-primary/30",
+  "Delivered": "bg-accent/20 text-accent border-accent/30",
+  "Booked": "bg-blue-500/20 text-blue-400 border-blue-500/30",
+  "Pending": "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+  "Cancelled": "bg-rose-500/20 text-rose-400 border-rose-500/30",
+};
 
 export default function ChallanPage() {
   const router = useRouter();
@@ -79,19 +88,16 @@ export default function ChallanPage() {
   const [fetchingGr, setFetchingGr] = useState<number | null>(null);
 
   const [charges, setCharges] = useState({
-    commission: "",
-    labour: "",
-    gr: "",
-    crossing: "",
-    truckFreight: "",
-    advance: "",
-    tfCredit: "",
-    totalToPay: "",
-    otherCharge: "",
-    lcdc: "",
-    crossing2: "",
-    doorDelivery: "",
-    balanceFreight: "",
+    commission: "0",
+    truckFreight: "0",
+    advance: "0",
+    tfCredit: "0",
+    totalToPay: "0",
+    otherCharge: "0",
+    lcdc: "0",
+    crossing2: "0",
+    doorDelivery: "0",
+    balanceFreight: "0",
     note: ""
   });
 
@@ -99,6 +105,10 @@ export default function ChallanPage() {
   const [loading, setLoading] = useState(false);
   const [waPhone, setWaPhone] = useState("");
   const [sendingWa, setSendingWa] = useState(false);
+  const [pendingShipments, setPendingShipments] = useState<any[]>([]);
+  const [pendingLoading, setPendingLoading] = useState(false);
+  const [pendingPage, setPendingPage] = useState(1);
+  const PENDING_PER_PAGE = 25;
   const receiptRef = useRef<HTMLDivElement>(null);
 
   const getNextChallanNo = useCallback(async (): Promise<string> => {
@@ -126,6 +136,21 @@ export default function ChallanPage() {
     }
   }, []);
 
+  const fetchPendingShipments = useCallback(async () => {
+    setPendingLoading(true);
+    try {
+      const { data } = await api.get("/shipments", {
+        params: { challanCreated: "false" }
+      });
+      if (data.success) setPendingShipments(data.data || []);
+    } catch (err) {
+      console.error("Failed to fetch pending shipments:", err);
+      setPendingShipments([]);
+    } finally {
+      setPendingLoading(false);
+    }
+  }, []);
+
   const updateRow = (index: number, field: keyof ChallanRow, value: string) => {
     const newRows = [...rows];
     newRows[index] = { ...newRows[index], [field]: value };
@@ -141,11 +166,33 @@ export default function ChallanPage() {
     setRows(newRows);
   };
 
+  const populateFromShipment = useCallback((shipment: any) => {
+    const newRow: ChallanRow = {
+      id: Date.now(),
+      grNo: shipment.consignmentNumber || '',
+      pkg: String(shipment.quantity ?? ''),
+      dest: shipment.toBranch || '',
+      content: '',
+      consignor: shipment.consignor?.name || '',
+      consignee: shipment.consignee?.name || '',
+      total: String(shipment.totalPayable ?? shipment.totalFreight ?? ''),
+      wt: String(shipment.chargedWeight ?? ''),
+    };
+    setRows(prev => [...prev, newRow]);
+    if (shipment.vehicleNumber && !vehicleNo) {
+      setVehicleNo(shipment.vehicleNumber);
+    }
+    setTimeout(() => {
+      document.getElementById('challan-printable')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+  }, [vehicleNo]);
+
   const handleGrBlur = useCallback(async (idx: number, grNo: string) => {
     if (!grNo.trim()) return;
     setFetchingGr(idx);
     let entryData: any = null;
     let cmTotal: string | null = null;
+    let shipmentData: any = null;
 
     try {
       const { data } = await api.get(`/entry/grno/${encodeURIComponent(grNo.trim())}`);
@@ -159,16 +206,22 @@ export default function ChallanPage() {
       }
     } catch { /* ignore */ }
 
+    try {
+      const { data } = await api.get(`/shipments/consignment/${encodeURIComponent(grNo.trim())}`);
+      if (data.success && data.data) shipmentData = data.data;
+    } catch { /* ignore */ }
+
     setRows((prev) => {
       const updated = [...prev];
       updated[idx] = {
         ...updated[idx],
-        pkg: entryData?.noOfPackages || updated[idx].pkg,
-        dest: entryData?.to || updated[idx].dest,
-        content: entryData?.contents || updated[idx].content,
-        consignor: entryData?.consignor || updated[idx].consignor,
-        consignee: entryData?.consignee || updated[idx].consignee,
-        total: cmTotal ?? updated[idx].total,
+        pkg: shipmentData?.quantity ?? entryData?.noOfPackages ?? updated[idx].pkg,
+        dest: shipmentData?.toBranch ?? entryData?.to ?? updated[idx].dest,
+        content: entryData?.contents ?? updated[idx].content,
+        consignor: shipmentData?.consignor?.name ?? entryData?.consignor ?? updated[idx].consignor,
+        consignee: shipmentData?.consignee?.name ?? entryData?.consignee ?? updated[idx].consignee,
+        total: shipmentData?.totalPayable ?? cmTotal ?? updated[idx].total,
+        wt: shipmentData?.chargedWeight ?? updated[idx].wt,
       };
       return updated;
     });
@@ -191,6 +244,28 @@ export default function ChallanPage() {
     }).catch(() => {});
   }, []);
 
+  // Fetch pending shipments (challan not yet created)
+  useEffect(() => {
+    fetchPendingShipments();
+  }, [fetchPendingShipments]);
+
+  // Handle grNo URL param — auto-populate challan table from shipment
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const grNo = params.get('grNo');
+    if (!grNo) return;
+    api.get(`/shipments/consignment/${encodeURIComponent(grNo)}`)
+      .then(({ data }) => {
+        if (data.success && data.data) {
+          populateFromShipment(data.data);
+        }
+      })
+      .catch(() => {
+        // If shipment not found, add empty row with the GR number
+        setRows(prev => [...prev, { ...emptyRow(Date.now()), grNo }]);
+      });
+  }, [populateFromShipment]);
+
   // Auto-detect custom vehicle/driver when driver list loads
   useEffect(() => {
     if (driverList.length > 0) {
@@ -210,11 +285,12 @@ export default function ChallanPage() {
   const totalWt = rows.reduce((sum, r) => sum + (parseFloat(r.wt) || 0), 0);
 
   const rowsTotal = rows.reduce((sum, r) => sum + (parseFloat(r.total) || 0), 0);
-  const chargeFields = ['commission','labour','gr','crossing','truckFreight','advance','tfCredit','totalToPay','otherCharge','lcdc','crossing2','balanceFreight'];
+  const chargeFields = ['truckFreight','advance','tfCredit','totalToPay','otherCharge','lcdc','crossing2','balanceFreight'];
   const totalDeductions = chargeFields.reduce((sum, f) => sum + (parseFloat((charges as any)[f]) || 0), 0);
   const doorDelivery = parseFloat(charges.doorDelivery) || 0;
 
-  const grandTotal = rowsTotal - totalDeductions + doorDelivery;
+  const commissionVal = parseFloat(charges.commission) || 0;
+  const grandTotal = rowsTotal - totalDeductions + doorDelivery + commissionVal;
 
   const handleSave = async () => {
     setSaving(true);
@@ -243,25 +319,25 @@ export default function ChallanPage() {
         setCustomDriver(false);
         setRows([]); // Clear all table rows (0 rows)
         setCharges({
-          commission: "",
-          labour: "",
-          gr: "",
-          crossing: "",
-          truckFreight: "",
-          advance: "",
-          tfCredit: "",
-          totalToPay: "",
-          otherCharge: "",
-          lcdc: "",
-          crossing2: "",
-          doorDelivery: "",
-          balanceFreight: "",
+          commission: "0",
+          truckFreight: "0",
+          advance: "0",
+          tfCredit: "0",
+          totalToPay: "0",
+          otherCharge: "0",
+          lcdc: "0",
+          crossing2: "0",
+          doorDelivery: "0",
+          balanceFreight: "0",
           note: ""
         });
 
         // Generate next challan number without page refresh
         const nextNo = await getNextChallanNo();
         setChallanNo(nextNo);
+
+        // Refresh the pending shipments list
+        await fetchPendingShipments();
       }
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Failed to save challan.");
@@ -303,6 +379,7 @@ export default function ChallanPage() {
       TOTAL_PKG: String(totalPkg),
       TOTAL_WT: totalWt.toFixed(1),
       GRAND_TOTAL: grandTotal.toFixed(2),
+      COMMISSION:r(charges.commission),
       TRUCK_FREIGHT: r(charges.truckFreight),
       ADVANCE: r(charges.advance),
       TF_CREDIT: r(charges.tfCredit),
@@ -346,6 +423,12 @@ export default function ChallanPage() {
       setSendingWa(false);
     }
   };
+
+  const pendingTotalPages = Math.max(1, Math.ceil(pendingShipments.length / PENDING_PER_PAGE));
+  const pendingCurrentPage = Math.min(pendingPage, pendingTotalPages);
+  const paginatedPending = pendingShipments.slice((pendingCurrentPage - 1) * PENDING_PER_PAGE, pendingCurrentPage * PENDING_PER_PAGE);
+
+  useEffect(() => { setPendingPage(1); }, [pendingShipments.length]);
 
   return (
     <DashboardLayout>
@@ -581,30 +664,33 @@ export default function ChallanPage() {
                           onBlur={() => handleGrBlur(idx, row.grNo)}
                           onChange={(e) => updateRow(idx, 'grNo', e.target.value)}
                           placeholder="GR No"
+                          data-row={idx}
+                          data-col={0}
+                          onKeyDown={(e) => handleTableCellKeyDown(e, idx, 0)}
                           className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600"
                         />
                         {fetchingGr === idx && <Loader2 className="h-3 w-3 animate-spin text-[#2388ff] absolute right-1 top-1/2 -translate-y-1/2" />}
                       </td>
                       <td className="border border-slate-700 p-0">
-                        <input type="number" min="0" value={row.pkg} onChange={(e) => updateRow(idx, 'pkg', e.target.value)} placeholder="0" className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600" />
+                        <input type="number" min="0" value={row.pkg} onChange={(e) => updateRow(idx, 'pkg', e.target.value)} placeholder="0" data-row={idx} data-col={1} onKeyDown={(e) => handleTableCellKeyDown(e, idx, 1)} className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600" />
                       </td>
                       <td className="border border-slate-700 p-0">
-                        <input type="text" value={row.dest} onChange={(e) => updateRow(idx, 'dest', e.target.value)} placeholder="City" className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600" />
+                        <input type="text" value={row.dest} onChange={(e) => updateRow(idx, 'dest', e.target.value)} placeholder="City" data-row={idx} data-col={2} onKeyDown={(e) => handleTableCellKeyDown(e, idx, 2)} className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600" />
                       </td>
                       <td className="border border-slate-700 p-0">
-                        <input type="text" value={row.content} onChange={(e) => updateRow(idx, 'content', e.target.value)} placeholder="Item" className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600" />
+                        <input type="text" value={row.content} onChange={(e) => updateRow(idx, 'content', e.target.value)} placeholder="Item" data-row={idx} data-col={3} onKeyDown={(e) => handleTableCellKeyDown(e, idx, 3)} className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600" />
                       </td>
                       <td className="border border-slate-700 p-0">
-                        <input type="text" value={row.consignor} onChange={(e) => updateRow(idx, 'consignor', e.target.value)} placeholder="Sender" className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600" />
+                        <input type="text" value={row.consignor} onChange={(e) => updateRow(idx, 'consignor', e.target.value)} placeholder="Sender" data-row={idx} data-col={4} onKeyDown={(e) => handleTableCellKeyDown(e, idx, 4)} className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600" />
                       </td>
                       <td className="border border-slate-700 p-0">
-                        <input type="text" value={row.consignee} onChange={(e) => updateRow(idx, 'consignee', e.target.value)} placeholder="Receiver" className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600" />
+                        <input type="text" value={row.consignee} onChange={(e) => updateRow(idx, 'consignee', e.target.value)} placeholder="Receiver" data-row={idx} data-col={5} onKeyDown={(e) => handleTableCellKeyDown(e, idx, 5)} className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600" />
                       </td>
                       <td className="border border-slate-700 p-0 bg-slate-900/40">
-                        <input type="number" step="0.01" value={row.total} onChange={(e) => updateRow(idx, 'total', e.target.value)} placeholder="0.00" className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600" />
+                        <input type="number" step="0.01" value={row.total} onChange={(e) => updateRow(idx, 'total', e.target.value)} placeholder="0.00" data-row={idx} data-col={6} onKeyDown={(e) => handleTableCellKeyDown(e, idx, 6)} className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600" />
                       </td>
                       <td className="border border-slate-700 p-0 bg-slate-900/40">
-                        <input type="number" step="0.01" value={row.wt} onChange={(e) => updateRow(idx, 'wt', e.target.value)} placeholder="0.0" className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600" />
+                        <input type="number" step="0.01" value={row.wt} onChange={(e) => updateRow(idx, 'wt', e.target.value)} placeholder="0.0" data-row={idx} data-col={7} onKeyDown={(e) => handleTableCellKeyDown(e, idx, 7)} className="w-full h-full p-1.5 bg-transparent border-0 text-white text-center outline-none placeholder:text-slate-600" />
                       </td>
                       <td className="border border-slate-700 p-0 text-center">
                         <button onClick={() => deleteRow(idx)} className="delete-btn text-rose-500 hover:text-rose-400 p-1.5" title="Remove">
@@ -627,18 +713,7 @@ export default function ChallanPage() {
                 <label className="text-[10px] font-bold text-[#2388ff] uppercase">COMMISSION RS. & P.</label>
                 <input type="number" step="0.01" value={charges.commission} onChange={(e) => setCharges({ ...charges, commission: e.target.value })} placeholder="0.00" className="bg-transparent border-b border-blue-800 text-white text-sm outline-none py-1 placeholder:text-slate-600" />
               </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold text-[#2388ff] uppercase">LABOUR CHARGE RS.</label>
-                <input type="number" step="0.01" value={charges.labour} onChange={(e) => setCharges({ ...charges, labour: e.target.value })} placeholder="0.00" className="bg-transparent border-b border-blue-800 text-white text-sm outline-none py-1 placeholder:text-slate-600" />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold text-[#2388ff] uppercase">G.R.</label>
-                <input type="number" step="0.01" value={charges.gr} onChange={(e) => setCharges({ ...charges, gr: e.target.value })} placeholder="0.00" className="bg-transparent border-b border-blue-800 text-white text-sm outline-none py-1 placeholder:text-slate-600" />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold text-[#2388ff] uppercase">CROSSING / COLLECTION RS.</label>
-                <input type="number" step="0.01" value={charges.crossing} onChange={(e) => setCharges({ ...charges, crossing: e.target.value })} placeholder="0.00" className="bg-transparent border-b border-blue-800 text-white text-sm outline-none py-1 placeholder:text-slate-600" />
-              </div>
+
               <div className="flex flex-col gap-1">
                 <label className="text-[10px] font-bold text-[#2388ff] uppercase">TRUCK FREIGHT</label>
                 <input type="number" step="0.01" value={charges.truckFreight} onChange={(e) => setCharges({ ...charges, truckFreight: e.target.value })} placeholder="0.00" className="bg-transparent border-b border-blue-800 text-white text-sm outline-none py-1 placeholder:text-slate-600" />
@@ -718,6 +793,105 @@ export default function ChallanPage() {
               </div>
             </div>
 
+          </div>
+        </div>
+
+        {/* PENDING SHIPMENTS TABLE */}
+        <div className="w-full flex justify-center">
+          <div className="w-full max-w-[1450px] rounded-xl border border-slate-800 bg-[#0b1220] shadow-xl p-8 relative overflow-hidden">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-bold tracking-tight text-white uppercase">Pending Shipments</h2>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Shipments awaiting challan generation
+                  {pendingShipments.length > 0 && (
+                    <span className="ml-2 font-mono text-[#2388ff]">{pendingShipments.length} pending</span>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            {pendingLoading ? (
+              <div className="flex items-center justify-center py-16 text-muted-foreground gap-2">
+                <Loader2 className="h-5 w-5 animate-spin" /> Loading pending shipments...
+              </div>
+            ) : pendingShipments.length === 0 ? (
+              <div className="text-center py-16 text-emerald-400 text-sm font-medium">
+                No pending shipments — all caught up!
+              </div>
+            ) : (
+              <div className="overflow-x-auto border border-slate-700 rounded-md bg-slate-900/40">
+                <table className="w-full border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-800 border-b-2 border-[#2388ff]/60">
+                      <th className="border-r border-slate-700 text-[#2388ff] uppercase font-bold p-2 w-[4%]">S.No.</th>
+                      <th className="border-r border-slate-700 text-[#2388ff] uppercase font-bold p-2 w-[9%]">Consignment No</th>
+                      <th className="border-r border-slate-700 text-[#2388ff] uppercase font-bold p-2 w-[9%]">Vehicle</th>
+                      <th className="border-r border-slate-700 text-[#2388ff] uppercase font-bold p-2 w-[11%]">Consignor</th>
+                      <th className="border-r border-slate-700 text-[#2388ff] uppercase font-bold p-2 w-[11%]">Consignee</th>
+                      <th className="border-r border-slate-700 text-[#2388ff] uppercase font-bold p-2 w-[9%]">Branch</th>
+                      <th className="border-r border-slate-700 text-[#2388ff] uppercase font-bold p-2 w-[9%]">Pkg Type</th>
+                      <th className="border-r border-slate-700 text-[#2388ff] uppercase font-bold p-2 w-[6%]">Qty</th>
+                      <th className="border-r border-slate-700 text-[#2388ff] uppercase font-bold p-2 w-[7%]">Chg Wt</th>
+                      <th className="border-r border-slate-700 text-[#2388ff] uppercase font-bold p-2 w-[9%]">Payment</th>
+                      <th className="border-r border-slate-700 text-[#2388ff] uppercase font-bold p-2 w-[9%]">Freight</th>
+              
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedPending.map((s, idx) => (
+                      <tr key={s._id || idx} className={idx % 2 === 0 ? '' : 'bg-slate-900/40'}>
+                        <td className="border border-slate-700 text-center font-mono text-slate-400 bg-slate-900/50 p-1.5">{idx + 1 + (pendingCurrentPage - 1) * PENDING_PER_PAGE}</td>
+                        <td className="border border-slate-700 p-1.5 font-mono">
+                          <button onClick={() => populateFromShipment(s)} className="text-[#2388ff] hover:text-blue-300 underline underline-offset-2 transition-colors" title="Click to add to challan">
+                            {s.consignmentNumber || '-'}
+                          </button>
+                        </td>
+                        <td className="border border-slate-700 p-1.5 text-white">{s.vehicleNumber || '-'}</td>
+                        <td className="border border-slate-700 p-1.5 text-white max-w-[160px] truncate" title={s.consignor?.name}>{s.consignor?.name || '-'}</td>
+                        <td className="border border-slate-700 p-1.5 text-white max-w-[160px] truncate" title={s.consignee?.name}>{s.consignee?.name || '-'}</td>
+                        <td className="border border-slate-700 p-1.5 text-white">{s.toBranch || '-'}</td>
+                        <td className="border border-slate-700 p-1.5 text-white">{s.packageType || '-'}</td>
+                        <td className="border border-slate-700 p-1.5 text-white text-center">{s.quantity ?? 0}</td>
+                        <td className="border border-slate-700 p-1.5 text-white text-right">{s.chargedWeight ?? 0}</td>
+                        <td className="border border-slate-700 p-1.5 text-white">{s.paymentMode || '-'}</td>
+                        <td className="border border-slate-700 p-1.5 text-white text-right font-mono">{(s.totalFreight ?? 0).toFixed?.(2) ?? s.totalFreight}</td>
+              
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {pendingTotalPages > 1 && (
+              <div className="flex items-center justify-between mt-4 text-xs text-slate-400">
+                <span>{pendingShipments.length} total pending</span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    disabled={pendingCurrentPage <= 1}
+                    onClick={() => setPendingPage(p => Math.max(1, p - 1))}
+                    className="h-7 px-2 text-slate-400 hover:text-white"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="font-mono">
+                    Page {pendingCurrentPage} of {pendingTotalPages}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    disabled={pendingCurrentPage >= pendingTotalPages}
+                    onClick={() => setPendingPage(p => Math.min(pendingTotalPages, p + 1))}
+                    className="h-7 px-2 text-slate-400 hover:text-white"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

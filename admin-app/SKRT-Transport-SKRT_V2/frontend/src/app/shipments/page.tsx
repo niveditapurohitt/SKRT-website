@@ -50,6 +50,7 @@ import { ViewContactDialog } from "@/components/shipments/ViewContactDialog";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import { useHeader } from "@/context/HeaderContext";
+import { useAuth } from "@/context/AuthContext";
 import { generateAndSendPDF } from "@/lib/whatsapp";
 import {
   Select,
@@ -104,7 +105,7 @@ function buildReceiptHtml(shipment: any): string {
       <table>
         <tr>
           <td colspan="6">
-            <div class="company">Sant Kanwar Ram Transport Corporation</div>
+            <div class="company">Sant Kanwar Ram Transport Corporation(BHL.)</div>
             <div class="sub">
               123,124 Transport Nagar, Bhilwara - 311001 (Raj.)<br>
               Mob: 96809-92567 / 86196-06627<br>
@@ -115,10 +116,10 @@ function buildReceiptHtml(shipment: any): string {
             <table style="width:100%;border-collapse:collapse;height:100%;">
               <tr>
                 <td class="bold">Date: ${fmtDate(shipment.bookedAt)}</td>
-                <td class="bold">GR No: ${shipment.consignmentNumber || '—'}</td>
+                <td class="bold">SK No: ${shipment.consignmentNumber || '—'}</td>
               </tr>
               <tr>
-                <td class="bold">From: BHILWARA (BLW)</td>
+                <td class="bold">From: BHILWARA</td>
                 <td class="bold">To: ${(shipment.toBranch || '—').toUpperCase()}</td>
               </tr>
             </table>
@@ -217,6 +218,7 @@ function buildReceiptHtml(shipment: any): string {
 export default function ShipmentsPage() {
   const router = useRouter();
   const { searchQuery } = useHeader();
+  const { can } = useAuth();
   const [shipmentList, setShipmentList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -252,7 +254,7 @@ export default function ShipmentsPage() {
   }, []);
 
   const exportCSV = () => {
-    const headers = ["Consignment No", "Vehicle", "Consignor", "Consignee", "Branch", "Package Type", "Quantity", "Charged Weight", "Payment Mode", "Freight", "Status", "Outgoing Status"];
+    const headers = ["Consignment No", "Vehicle", "Consignor", "Consignee", "Branch", "Package Type", "Quantity", "Charged Weight", "Payment Mode", "Freight", "Status", "Challan", "Outgoing Status"];
     const rows = filteredShipments.map((s: any) => [
       s.consignmentNumber || s.shipmentId || s.id || "",
       s.vehicleNumber || "",
@@ -265,6 +267,7 @@ export default function ShipmentsPage() {
       s.paymentMode || "",
       s.totalFreight ?? "",
       s.status || "Booked",
+      s.challanCreated ? "Created" : "Pending",
       s.outgoingStatus || "Pending",
     ]);
 
@@ -341,7 +344,7 @@ export default function ShipmentsPage() {
             <Button variant="outline" size="sm" onClick={exportCSV}>
               <Download className="h-4 w-4 mr-2" /> Download
             </Button>
-            <CreateShipmentDialog onShipmentCreated={fetchShipments} />
+            {can('shipments', 'create') && <CreateShipmentDialog onShipmentCreated={fetchShipments} />}
           </div>
         </div>
 
@@ -373,6 +376,7 @@ export default function ShipmentsPage() {
                   <TableHead className="text-[10px] w-[7%]">Payment</TableHead>
                   <TableHead className="text-[10px] w-[8%]">Freight</TableHead>
                   <TableHead className="text-[10px] w-[7%]">Status</TableHead>
+                  <TableHead className="text-[10px] w-[8%]">Challan</TableHead>
                   <TableHead className="text-[10px] w-[10%]">Outgoing</TableHead>
                   <TableHead className="text-[10px] w-[7%] text-right">Actions</TableHead>
                 </TableRow>
@@ -394,6 +398,19 @@ export default function ShipmentsPage() {
                       <Badge variant="outline" className={cn("px-1 py-0 whitespace-nowrap text-[10px]", statusColors[shipment.status] || 'bg-muted text-muted-foreground border-border')}>
                         {shipment.status || 'Booked'}
                       </Badge>
+                    </TableCell>
+                    <TableCell className="text-[10px]">
+                      <button
+                        onClick={() => router.push(`/challan?grNo=${encodeURIComponent(shipment.consignmentNumber || shipment.shipmentId || '')}`)}
+                        className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase cursor-pointer transition-colors ${
+                          shipment.challanCreated
+                            ? "bg-emerald-900/50 text-emerald-400 hover:bg-emerald-800/60"
+                            : "bg-amber-900/50 text-amber-400 hover:bg-amber-800/60"
+                        }`}
+                        title={shipment.challanCreated ? "Click to view challan" : "Click to create challan"}
+                      >
+                        {shipment.challanCreated ? "Created" : "Pending"}
+                      </button>
                     </TableCell>
                     <TableCell className="text-[10px]">
                       <Select
@@ -436,11 +453,13 @@ export default function ShipmentsPage() {
                               <Eye className="h-4 w-4 mr-2 text-primary" /> View Shipment
                             </DropdownMenuItem>
 
+                            {can('shipments', 'edit') && (
                             <DropdownMenuItem
                               onClick={() => { setSelectedShipment(shipment); setEditOpen(true); }}
                             >
                               <Edit className="h-4 w-4 mr-2 text-yellow-500" /> Edit Shipment
                             </DropdownMenuItem>
+                            )}
 
                             <DropdownMenuItem
                               onClick={() => handlePrintReceipt(shipment)}

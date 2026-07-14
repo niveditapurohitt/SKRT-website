@@ -1,173 +1,176 @@
-const https = require('https');
-const { makeWASocket, Browsers, DisconnectReason, initAuthCreds, makeCacheableSignalKeyStore } = require('@whiskeysockets/baileys');
-const mongoose = require('mongoose');
-const { Binary } = require('bson');
+const { makeWASocket, useMultiFileAuthState } = require('@whiskeysockets/baileys');
+const fs = require('fs');
+const path = require('path');
+const P = require('pino');
 
 let sock = null;
-let isReady = false;
+let isConnected = false;
 let qrCode = null;
-let initLock = false;
-let reconnectAttempts = 0;
+let connectionStatus = 'disconnected';
+let retryCount = 0;
+let statusMessage = '';
+let initialWipeDone = false;
+const MAX_RETRIES_BEFORE_WIPE = 3;
+const logger = P({ level: 'silent' });
 
-const COLLECTION_NAME = 'whatsapp_sessions';
-const KEY_PREFIX = 'key:';
-
-const binaryToBuffer = (val) => {
-  if (val instanceof Binary) return Buffer.from(val.buffer);
-  if (Buffer.isBuffer(val)) return val;
-  if (val && typeof val === 'object') {
-    if (Array.isArray(val)) return val.map(binaryToBuffer);
-    if (val.constructor !== Object) return val;
-    const result = {};
-    for (const [k, v] of Object.entries(val)) result[k] = binaryToBuffer(v);
-    return result;
+function wipeSession(authDir) {
+  const sessionDir = path.join(authDir, 'session');
+  if (fs.existsSync(sessionDir)) {
+    fs.rmSync(sessionDir, { recursive: true, force: true });
+    console.log('Wiped stale WhatsApp session.');
   }
-  return val;
-};
-
-const useMongoDBAuthState = async (collection) => {
-  if (process.env.WHATSAPP_FRESH === 'true') {
-    console.log('🧹 WHATSAPP_FRESH mode — clearing session from MongoDB');
-    await collection.drop().catch(() => {});
-    console.log('   ✓ Collection dropped, fresh QR scan required');
-  }
-  const credsDoc = await collection.findOne({ _id: 'creds' });
-  const rawCreds = credsDoc ? credsDoc.creds : null;
-  const creds = rawCreds ? binaryToBuffer(rawCreds) : initAuthCreds();
-
-  const keys = {
-    get: async (type, ids) => {
-      const docs = await collection.find({
-        _id: { $in: ids.map(id => `${KEY_PREFIX}${type}:${id}`) }
-      }).toArray();
-      const result = {};
-      for (const doc of docs) {
-        const id = doc._id.replace(`${KEY_PREFIX}${type}:`, '');
-        result[id] = binaryToBuffer(doc.value);
-      }
-      return result;
-    },
-    set: async (data) => {
-      const ops = Object.entries(data).map(([key, value]) => ({
-        updateOne: {
-          filter: { _id: `${KEY_PREFIX}${key}` },
-          update: { $set: { value } },
-          upsert: true,
-        }
-      }));
-      if (ops.length) await collection.bulkWrite(ops);
-    },
-    delete: async (ids) => {
-      await collection.deleteMany({
-        _id: { $in: ids.map(id => `${KEY_PREFIX}${id}`) }
-      });
-    },
-  };
-
-  const saveCreds = async () => {
-    await collection.updateOne(
-      { _id: 'creds' },
-      { $set: { creds } },
-      { upsert: true }
-    );
-  };
-
-  return {
-    state: {
-      creds,
-      keys: makeCacheableSignalKeyStore(keys),
-    },
-    saveCreds,
-  };
-};
+}
 
 exports.initialize = async () => {
-  if (initLock) {
-    console.log('⏳ WhatsApp init already in progress, skipping...');
-    return;
-  }
-  initLock = true;
+  try {
+    const authDir = path.join(process.cwd(), '.baileys_auth');
 
-  if (sock) {
-    try {
-      sock.ev.removeAllListeners();
-      sock.end(undefined);
-      sock.close();
-    } catch {}
-    sock = null;
-  }
+    if (!fs.existsSync(authDir)) {
+      fs.mkdirSync(authDir, { recursive: true });
+    }
 
-  if (mongoose.connection.readyState !== 1) {
-    await new Promise((resolve) => {
-      mongoose.connection.once('connected', resolve);
+    // Only honor WHATSAPP_FRESH on the very first call, not on retries
+    if (!initialWipeDone && process.env.WHATSAPP_FRESH === 'true') {
+      wipeSession(authDir);
+      initialWipeDone = true;
+      console.log('WHATSAPP_FRESH=true: Cleared stored WhatsApp session.');
+    }
+
+    const { state, saveCreds } = await useMultiFileAuthState(authDir);
+
+    sock = makeWASocket({
+      logger,
+      printQRInTerminal: false,
+      auth: state,
+      browser: ['SKRT Corp Dashboard', 'Chrome', '10.0.0'],
+      syncFullHistory: false,
+      markOnlineOnConnect: false,
+      shouldSyncHistory: false,
+      connectTimeoutMs: 30000,
+      keepAliveIntervalMs: 15000,
+      defaultQueryTimeoutMs: 30000,
     });
-  }
 
-  const collection = mongoose.connection.db.collection(COLLECTION_NAME);
-  const { state, saveCreds } = await useMongoDBAuthState(collection);
+    sock.ev.on('connection.update', async (update) => {
+      const { connection, lastDisconnect, qr } = update;
 
-  sock = makeWASocket({
-    auth: state,
-    printQRInTerminal: false,
-    browser: Browsers.macOS('Desktop'),
-    syncFullHistory: false,
-    markOnlineOnConnect: false,
-    agent: new https.Agent({ keepAlive: true, family: 4 }),
-  });
-
-  sock.ev.on('connection.update', (update) => {
-    const { connection, lastDisconnect, qr } = update;
-
-    if (qr) {
-      qrCode = qr;
-      reconnectAttempts = 0;
-      console.log('📱 QR code received');
-    }
-
-    if (connection === 'open') {
-      isReady = true;
-      qrCode = null;
-      reconnectAttempts = 0;
-      initLock = false;
-      console.log('✅ WhatsApp client is ready!');
-    }
-
-    if (connection === 'close') {
-      isReady = false;
-      qrCode = null;
-      initLock = false;
-      const isLoggedOut = lastDisconnect?.error?.output?.statusCode === DisconnectReason.loggedOut;
-      if (isLoggedOut) {
-        console.log('❌ WhatsApp logged out. Scan QR code again.');
-      } else {
-        const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 60000);
-        reconnectAttempts++;
-        console.log(`🔌 WhatsApp disconnected, reconnecting in ${delay / 1000}s...`);
-        setTimeout(() => exports.initialize(), delay);
+      if (qr) {
+        qrCode = qr;
+        statusMessage = '';
+        console.log('WhatsApp QR code generated. Ready for scan.');
       }
+
+      if (connection === 'close') {
+        const error = lastDisconnect?.error;
+        const shouldReconnect = error &&
+          error instanceof Error &&
+          !error.message.includes('Please wait') &&
+          !error.message.includes('QUOTIENT_EXCEEDED') &&
+          !error.message.includes('Disconnected');
+
+        console.log(`WhatsApp connection closed. Reconnecting: ${shouldReconnect}`);
+
+        isConnected = false;
+        connectionStatus = 'disconnected';
+
+        if (shouldReconnect) {
+          retryCount++;
+          if (retryCount >= MAX_RETRIES_BEFORE_WIPE) {
+            wipeSession(authDir);
+            retryCount = 0;
+            statusMessage = 'Stale session cleared, generating new QR...';
+            console.log(statusMessage);
+          }
+          setTimeout(() => exports.initialize(), 5000);
+        }
+      } else if (connection === 'open') {
+        isConnected = true;
+        qrCode = null;
+        connectionStatus = 'connected';
+        retryCount = 0;
+        statusMessage = '';
+        console.log('WhatsApp client connected successfully.');
+      }
+
+      if (update.isConnecting) {
+        connectionStatus = 'connecting';
+        console.log('WhatsApp client is connecting...');
+      }
+    });
+
+    sock.ev.on('creds.update', saveCreds);
+
+    sock.ev.on('messages.upsert', async (m) => {
+      console.log('Received message:', m.type, m.messages.length);
+    });
+
+    console.log('WhatsApp client initialization started.');
+  } catch (error) {
+    console.error('Failed to initialize WhatsApp client:', error.message);
+    connectionStatus = 'error';
+    retryCount++;
+    if (retryCount >= MAX_RETRIES_BEFORE_WIPE) {
+      const authDir = path.join(process.cwd(), '.baileys_auth');
+      wipeSession(authDir);
+      retryCount = 0;
+      statusMessage = 'Stale session cleared, generating new QR...';
+      console.log(statusMessage);
     }
-  });
-
-  sock.ev.on('creds.update', saveCreds);
-
-  console.log('🚀 Initializing WhatsApp client...');
+    setTimeout(() => exports.initialize(), 10000);
+  }
 };
 
-exports.getQR = () => qrCode;
-exports.isReady = () => isReady;
 exports.getStatus = () => ({
-  connected: isReady,
-  qrCode: qrCode,
-  state: isReady ? 'ready' : qrCode ? 'qr_pending' : 'initializing'
+  connected: isConnected,
+  qrCode: qrCode || null,
+  status: connectionStatus,
+  message: statusMessage || undefined,
 });
 
-exports.sendMedia = async (phone, base64Data, filename) => {
-  if (!isReady) throw new Error('WhatsApp client not connected. Scan QR code first.');
-  const jid = phone.includes('@s.whatsapp.net') ? phone : `${phone}@s.whatsapp.net`;
-  const buffer = Buffer.from(base64Data, 'base64');
-  await sock.sendMessage(jid, {
-    document: buffer,
-    mimetype: 'application/pdf',
-    fileName: filename,
-  });
+exports.sendMedia = async (phone, base64Data, filename = 'document.pdf') => {
+  if (!sock || !isConnected) {
+    throw new Error('WhatsApp client is not connected');
+  }
+
+  const cleanPhone = phone.replace(/\D/g, '');
+
+  if (cleanPhone.length < 10 || cleanPhone.length > 15) {
+    throw new Error('Invalid phone number format');
+  }
+
+  const jid = `${cleanPhone}@s.whatsapp.net`;
+
+  try {
+    await sock.sendMessage(jid, {
+      document: Buffer.from(base64Data, 'base64'),
+      mimetype: 'application/pdf',
+      fileName: filename
+    });
+
+    console.log(`PDF sent to ${jid}`);
+    return { success: true, phone: cleanPhone };
+  } catch (error) {
+    console.error(`Failed to send PDF to ${jid}:`, error.message);
+    throw new Error(`Failed to send message: ${error.message}`);
+  }
 };
+
+exports.sendMessage = async (phone, text) => {
+  if (!sock || !isConnected) {
+    throw new Error('WhatsApp client is not connected');
+  }
+
+  const cleanPhone = phone.replace(/\D/g, '');
+  const jid = `${cleanPhone}@s.whatsapp.net`;
+
+  try {
+    await sock.sendMessage(jid, { text });
+    console.log(`Message sent to ${jid}`);
+    return { success: true, phone: cleanPhone };
+  } catch (error) {
+    console.error(`Failed to send message to ${jid}:`, error.message);
+    throw new Error(`Failed to send message: ${error.message}`);
+  }
+};
+
+exports.getSocket = () => sock;

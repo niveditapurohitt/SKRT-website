@@ -116,21 +116,6 @@ const RouteMapPreview = ({ origin, destination, isDelivered }: { origin: string,
   );
 };
 
-const formatShipmentOrigin = (shipment: any) => {
-  if (!shipment) return "Origin";
-
-  const consignor = shipment.consignor || {};
-  return [consignor.building, consignor.place, consignor.city, consignor.state]
-    .filter(Boolean)
-    .join(", ") || shipment.origin || "Origin";
-};
-
-const formatShipmentDestination = (shipment: any) => {
-  if (!shipment) return "Destination";
-
-  return shipment.toBranch || shipment.destination || "Destination";
-};
-
 export default function LiveTrackingPage() {
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -171,50 +156,14 @@ export default function LiveTrackingPage() {
     if (!isSilent) setLoading(true);
     fetchLock.current = true;
     try {
-      const [trackingResponse, shipmentsResponse] = await Promise.allSettled([
-        api.get('/tracking'),
-        api.get('/shipments')
-      ]);
-
-      if (trackingResponse.status === 'fulfilled' && trackingResponse.value.data.success) {
-        const shipmentIndex = new Map<string, any>();
-        const shipmentRecords =
-          shipmentsResponse.status === 'fulfilled'
-            ? shipmentsResponse.value.data?.data || []
-            : [];
-
-        for (const shipment of shipmentRecords) {
-          if (shipment.consignmentNumber) {
-            shipmentIndex.set(shipment.consignmentNumber, shipment);
-          }
-          if (shipment.vehicleNumber) {
-            shipmentIndex.set(shipment.vehicleNumber, shipment);
-          }
-        }
-
-        const enrichedData = trackingResponse.value.data.data.map((vehicle: any) => {
-          const dbShipment =
-            shipmentIndex.get(vehicle.consignmentNumber) ||
-            shipmentIndex.get(vehicle.vehicleNumber);
-
-          return {
-            ...vehicle,
-            shipment: {
-              ...vehicle.shipment,
-              origin: formatShipmentOrigin(dbShipment) || vehicle.shipment?.origin || "Origin",
-              destination: formatShipmentDestination(dbShipment) || vehicle.shipment?.destination || "Destination",
-              sender: dbShipment?.consignor?.name || vehicle.shipment?.sender || "-",
-              receiver: dbShipment?.consignee?.name || vehicle.shipment?.receiver || "-"
-            }
-          };
-        });
-
-        setVehicles(enrichedData);
-        if (enrichedData.length > 0 && !selectedVehicle) {
-          setSelectedVehicle(enrichedData[0]);
+      const { data } = await api.get('/tracking');
+      if (data.success) {
+        setVehicles(data.data);
+        if (data.data.length > 0 && !selectedVehicle) {
+          setSelectedVehicle(data.data[0]);
         } else if (selectedVehicle) {
           // Keep selection synced
-          const updated = enrichedData.find((v: any) => v._id === selectedVehicle._id);
+          const updated = data.data.find((v: any) => v._id === selectedVehicle._id);
           // Only update if actually different to prevent unnecessary re-renders
           if (updated && JSON.stringify(updated) !== JSON.stringify(selectedVehicle)) {
             setSelectedVehicle(updated);

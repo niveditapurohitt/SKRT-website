@@ -408,7 +408,7 @@ export default function SummaryPage() {
                   {/* ── Company Header ── */}
                   <div className="text-center mb-1">
                     <div className="text-[12px] font-black uppercase tracking-wide text-[#2388ff] leading-tight">
-                      Sant Kanwar Ram Transport Corp. (BHL.)  <span className="text-slate-400">(BHL.)</span>
+                      Sant Kanwar Ram Transport Corp.(BHL.)
                     </div>
                     <div className="text-[10px] text-slate-500 mt-0.5 tracking-wider">
                       Bhilwara – 311001 (Raj.)
@@ -550,7 +550,7 @@ export default function SummaryPage() {
                     {/* ── Extra fields separator ── */}
                     <div className="flex items-center gap-2 pt-2 pb-1">
                       <div className="flex-1 h-px bg-blue-900/30" />
-                      <span className="text-[9px] font-bold uppercase tracking-[3px] text-slate-500">Adjust</span>
+                      <span className="text-[9px] font-bold uppercase tracking-[3px] text-slate-500">Adjustments</span>
                       <div className="flex-1 h-px bg-blue-900/30" />
                     </div>
 
