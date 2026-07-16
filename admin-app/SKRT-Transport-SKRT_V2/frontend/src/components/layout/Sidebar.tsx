@@ -67,9 +67,9 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
       )}
     >
       <div className="p-6 flex justify-between items-center">
-        <a href="/dashboard" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           <img src="logobg.png" alt="logo" className="w-25 " />
-        </a>
+        </Link>
         <button
           onClick={onClose}
           className="md:hidden text-muted-foreground hover:text-foreground"
