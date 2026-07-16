@@ -67,11 +67,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
       )}
     >
       <div className="p-6 flex justify-between items-center">
-        <Link
-          href="https://skrt-website-1.onrender.com/"
-          className="flex items-center gap-3"
-          aria-label="Go to landing page"
-        >
+        <Link href="https://skrt-travel-website.vercel.app/" className="flex items-center gap-3" aria-label="Go to landing page">
           <img src="logobg.png" alt="logo" className="w-25 " />
         </Link>
         <button
