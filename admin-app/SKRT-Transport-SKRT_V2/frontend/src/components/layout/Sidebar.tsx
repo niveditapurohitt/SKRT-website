@@ -58,6 +58,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
     if (!module) return true;
     return can(module, 'view');
   });
+  const menuToRender = visibleItems.length > 0 ? visibleItems : menuItems;
 
   return (
     <aside
@@ -80,7 +81,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
       </div>
 
       <nav className="flex-1 px-4 space-y-2 mt-4">
-        {visibleItems.map((item) => {
+        {menuToRender.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
 
