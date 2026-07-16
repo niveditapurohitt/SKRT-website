@@ -40,10 +40,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const can = useCallback((module: string, action: string): boolean => {
+    const role = user?.role?.toLowerCase();
+    if (role === "admin") return true;
+    if (permissions?.all) return true;
     if (!permissions) return false;
-    if (permissions.all) return true;
     return !!(permissions[module] && permissions[module][action]);
-  }, [permissions]);
+  }, [permissions, user?.role]);
 
   useEffect(() => {
     if (initializedRef.current) return;
